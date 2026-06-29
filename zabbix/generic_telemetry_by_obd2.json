@@ -56,12 +56,12 @@
                         "trigger_prototypes": [
                             {
                                 "uuid": "ec39523e38f14634ac87c4972daef336",
-                                "expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])>110",
+                                "expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])>{$OBD.TEMP.HIGH}",
                                 "recovery_mode": "RECOVERY_EXPRESSION",
-                                "recovery_expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])<100",
+                                "recovery_expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])<{$OBD.TEMP.HIGH.RECOVERY}",
                                 "name": "High temperature: {#OBD_NAME} ({ITEM.LASTVALUE})",
                                 "priority": "HIGH",
-                                "description": "Thermal sensor above 110°C.\nRecovery: below 100°C.\n\nPID: obd[{#OBD_KEY}]",
+                                "description": "Thermal sensor above {$OBD.TEMP.HIGH}°C.\nRecovery: below {$OBD.TEMP.HIGH.RECOVERY}°C.\n\nPID: obd[{#OBD_KEY}]",
                                 "tags": [
                                     {
                                         "tag": "scope",
@@ -75,12 +75,12 @@
                             },
                             {
                                 "uuid": "63a8d61a0bc849d1bba5cc47bcda97ec",
-                                "expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])<11.5",
+                                "expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])<{$OBD.VOLTAGE.LOW}",
                                 "recovery_mode": "RECOVERY_EXPRESSION",
-                                "recovery_expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])>12",
+                                "recovery_expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])>{$OBD.VOLTAGE.LOW.RECOVERY}",
                                 "name": "Low voltage: {#OBD_NAME} ({ITEM.LASTVALUE}V)",
                                 "priority": "WARNING",
-                                "description": "Control module voltage below 11.5V.\nPossible alternator or battery issue.\nRecovery: above 12V.\n\nPID: obd[{#OBD_KEY}]",
+                                "description": "Control module voltage below {$OBD.VOLTAGE.LOW}V.\nPossible alternator or battery issue.\nRecovery: above {$OBD.VOLTAGE.LOW.RECOVERY}V.\n\nPID: obd[{#OBD_KEY}]",
                                 "tags": [
                                     {
                                         "tag": "scope",
@@ -94,12 +94,12 @@
                             },
                             {
                                 "uuid": "f4f613d853174a7f8aef616b02928ec3",
-                                "expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])>6000",
+                                "expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])>{$OBD.RPM.HIGH}",
                                 "recovery_mode": "RECOVERY_EXPRESSION",
-                                "recovery_expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])<5500",
+                                "recovery_expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])<{$OBD.RPM.HIGH.RECOVERY}",
                                 "name": "High RPM: {#OBD_NAME} ({ITEM.LASTVALUE}rpm)",
                                 "priority": "AVERAGE",
-                                "description": "Engine rotation above 6000 RPM.\nRecovery: below 5500 RPM.\n\nPID: obd[{#OBD_KEY}]",
+                                "description": "Engine rotation above {$OBD.RPM.HIGH} RPM.\nRecovery: below {$OBD.RPM.HIGH.RECOVERY} RPM.\n\nPID: obd[{#OBD_KEY}]",
                                 "tags": [
                                     {
                                         "tag": "scope",
@@ -132,12 +132,12 @@
                             },
                             {
                                 "uuid": "ebe09a9a8f7647c898b17c243f961a6b",
-                                "expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])>950",
+                                "expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])>{$OBD.CATALYST.HIGH}",
                                 "recovery_mode": "RECOVERY_EXPRESSION",
-                                "recovery_expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])<900",
+                                "recovery_expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])<{$OBD.CATALYST.HIGH.RECOVERY}",
                                 "name": "Excessive catalyst temperature: {#OBD_NAME} ({ITEM.LASTVALUE})",
                                 "priority": "HIGH",
-                                "description": "Catalyst temperature above 950 °C.\nNormal operating range: 400-900 °C.\nAbove 950 °C may indicate overload or fuel system issues.\nRecovery: below 900 °C.\nPID: obd[{#OBD_KEY}]",
+                                "description": "Catalyst temperature above {$OBD.CATALYST.HIGH} °C.\nNormal operating range: 400-900 °C.\nAbove {$OBD.CATALYST.HIGH} °C may indicate overload or fuel system issues.\nRecovery: below {$OBD.CATALYST.HIGH.RECOVERY} °C.\nPID: obd[{#OBD_KEY}]",
                                 "tags": [
                                     {
                                         "tag": "scope",
@@ -530,6 +530,16 @@
                 ],
                 "macros": [
                     {
+                        "macro": "{$OBD.CATALYST.HIGH}",
+                        "value": "950",
+                        "description": "Excessive temperature threshold for catalyst (°C)"
+                    },
+                    {
+                        "macro": "{$OBD.CATALYST.HIGH.RECOVERY}",
+                        "value": "900",
+                        "description": "Recovery temperature for catalyst (°C)"
+                    },
+                    {
                         "macro": "{$OBD.ENGINE.DISPLACEMENT}",
                         "value": "1.0",
                         "description": "Engine displacement in liters (e.g. 1.0, 1.6, 2.0)"
@@ -538,6 +548,36 @@
                         "macro": "{$OBD.ENGINE.VE}",
                         "value": "0.80",
                         "description": "Volumetric Efficiency of the engine (typically 0.80 to 0.85 for naturally aspirated, >1.0 for turbo)"
+                    },
+                    {
+                        "macro": "{$OBD.RPM.HIGH}",
+                        "value": "6000",
+                        "description": "High RPM threshold"
+                    },
+                    {
+                        "macro": "{$OBD.RPM.HIGH.RECOVERY}",
+                        "value": "5500",
+                        "description": "Recovery RPM"
+                    },
+                    {
+                        "macro": "{$OBD.TEMP.HIGH}",
+                        "value": "110",
+                        "description": "High temperature threshold for thermal sensors (°C)"
+                    },
+                    {
+                        "macro": "{$OBD.TEMP.HIGH.RECOVERY}",
+                        "value": "100",
+                        "description": "Recovery temperature for thermal sensors (°C)"
+                    },
+                    {
+                        "macro": "{$OBD.VOLTAGE.LOW}",
+                        "value": "11.5",
+                        "description": "Low voltage threshold for control module (V)"
+                    },
+                    {
+                        "macro": "{$OBD.VOLTAGE.LOW.RECOVERY}",
+                        "value": "12",
+                        "description": "Recovery voltage for control module (V)"
                     }
                 ]
             }
