@@ -1,0 +1,546 @@
+{
+    "zabbix_export": {
+        "version": "7.0",
+        "template_groups": [
+            {
+                "uuid": "63d7d43db3d940ebad910df7768fa881",
+                "name": "Templates/Automotive"
+            }
+        ],
+        "templates": [
+            {
+                "uuid": "66780197a70f4af280bf0d641eb915a2",
+                "template": "Generic Telemetry by OBD2",
+                "name": "Generic Telemetry by OBD2",
+                "description": "A generic Zabbix template for vehicle telemetry using the OBD2 standard (SAE J1979). Uses LLD to dynamically discover supported PIDs. Configurable for different cars via macros.",
+                "groups": [
+                    {
+                        "name": "Templates/Automotive"
+                    }
+                ],
+                "discovery_rules": [
+                    {
+                        "uuid": "2ff7e51f226a4e4a876513ac8456eb04",
+                        "name": "OBD2 PID Discovery",
+                        "key": "obd.discovery",
+                        "type": "TRAP",
+                        "delay": "0",
+                        "lifetime": "30d",
+                        "description": "Automatically discovers all OBD2 PIDs supported by the ECU.\n\nThe telemetry.py script sends the discovery payload upon connection and every hour.\n\nAvailable macros:\n  {#OBD_KEY}  — key suffix (e.g. rpm, speed, coolant_temp)\n  {#OBD_NAME} — readable name (e.g. Engine RPM)\n  {#OBD_UNIT} — measurement unit (e.g. rpm, km/h, °C)",
+                        "item_prototypes": [
+                            {
+                                "uuid": "f83d8a5f9e274ecc919232b2ed634e73",
+                                "name": "{#OBD_NAME}",
+                                "key": "obd[{#OBD_KEY}]",
+                                "type": "TRAP",
+                                "value_type": "FLOAT",
+                                "units": "{#OBD_UNIT}",
+                                "delay": "0",
+                                "description": "{#OBD_DESC}",
+                                "tags": [
+                                    {
+                                        "tag": "component",
+                                        "value": "obd2"
+                                    },
+                                    {
+                                        "tag": "pid",
+                                        "value": "{#OBD_KEY}"
+                                    },
+                                    {
+                                        "tag": "source",
+                                        "value": "ecu"
+                                    }
+                                ]
+                            }
+                        ],
+                        "trigger_prototypes": [
+                            {
+                                "uuid": "ec39523e38f14634ac87c4972daef336",
+                                "expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])>110",
+                                "recovery_mode": "RECOVERY_EXPRESSION",
+                                "recovery_expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])<100",
+                                "name": "High temperature: {#OBD_NAME} ({ITEM.LASTVALUE})",
+                                "priority": "HIGH",
+                                "description": "Thermal sensor above 110°C.\nRecovery: below 100°C.\n\nPID: obd[{#OBD_KEY}]",
+                                "tags": [
+                                    {
+                                        "tag": "scope",
+                                        "value": "availability"
+                                    },
+                                    {
+                                        "tag": "type",
+                                        "value": "temperature"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "63a8d61a0bc849d1bba5cc47bcda97ec",
+                                "expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])<11.5",
+                                "recovery_mode": "RECOVERY_EXPRESSION",
+                                "recovery_expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])>12",
+                                "name": "Low voltage: {#OBD_NAME} ({ITEM.LASTVALUE}V)",
+                                "priority": "WARNING",
+                                "description": "Control module voltage below 11.5V.\nPossible alternator or battery issue.\nRecovery: above 12V.\n\nPID: obd[{#OBD_KEY}]",
+                                "tags": [
+                                    {
+                                        "tag": "scope",
+                                        "value": "availability"
+                                    },
+                                    {
+                                        "tag": "type",
+                                        "value": "voltage"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "f4f613d853174a7f8aef616b02928ec3",
+                                "expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])>6000",
+                                "recovery_mode": "RECOVERY_EXPRESSION",
+                                "recovery_expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])<5500",
+                                "name": "High RPM: {#OBD_NAME} ({ITEM.LASTVALUE}rpm)",
+                                "priority": "AVERAGE",
+                                "description": "Engine rotation above 6000 RPM.\nRecovery: below 5500 RPM.\n\nPID: obd[{#OBD_KEY}]",
+                                "tags": [
+                                    {
+                                        "tag": "scope",
+                                        "value": "performance"
+                                    },
+                                    {
+                                        "tag": "type",
+                                        "value": "rpm"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "ba9f45379ab142a28f317cca7a00ebc0",
+                                "expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])=0",
+                                "recovery_mode": "RECOVERY_EXPRESSION",
+                                "recovery_expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])=1",
+                                "name": "Emission monitor failed: {#OBD_NAME}",
+                                "priority": "AVERAGE",
+                                "description": "Emission monitor returned 0 (failed or incomplete).\n1 = passed / 0 = failed or not completed.\nPID: obd[{#OBD_KEY}]",
+                                "tags": [
+                                    {
+                                        "tag": "scope",
+                                        "value": "availability"
+                                    },
+                                    {
+                                        "tag": "type",
+                                        "value": "emission_monitor"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "ebe09a9a8f7647c898b17c243f961a6b",
+                                "expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])>950",
+                                "recovery_mode": "RECOVERY_EXPRESSION",
+                                "recovery_expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])<900",
+                                "name": "Excessive catalyst temperature: {#OBD_NAME} ({ITEM.LASTVALUE})",
+                                "priority": "HIGH",
+                                "description": "Catalyst temperature above 950 °C.\nNormal operating range: 400-900 °C.\nAbove 950 °C may indicate overload or fuel system issues.\nRecovery: below 900 °C.\nPID: obd[{#OBD_KEY}]",
+                                "tags": [
+                                    {
+                                        "tag": "scope",
+                                        "value": "availability"
+                                    },
+                                    {
+                                        "tag": "type",
+                                        "value": "temperature"
+                                    }
+                                ]
+                            }
+                        ],
+                        "graph_prototypes": [
+                            {
+                                "uuid": "06f9b02fe587410c885dab85f3599ffb",
+                                "name": "OBD2: {#OBD_NAME}",
+                                "graph_items": [
+                                    {
+                                        "drawtype": "BOLD_LINE",
+                                        "color": "1A7C11",
+                                        "item": {
+                                            "host": "Generic Telemetry by OBD2",
+                                            "key": "obd[{#OBD_KEY}]"
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        "overrides": [
+                            {
+                                "name": "Enable temperature trigger for thermal sensors",
+                                "step": "1",
+                                "filter": {
+                                    "evaltype": "AND",
+                                    "conditions": [
+                                        {
+                                            "macro": "{#OBD_KEY}",
+                                            "value": "coolant_temp|intake_temp|ambient_air_temp|oil_temp",
+                                            "formulaid": "A",
+                                            "operator": "MATCHES_REGEX"
+                                        }
+                                    ]
+                                },
+                                "operations": [
+                                    {
+                                        "operationobject": "TRIGGER_PROTOTYPE",
+                                        "operator": "LIKE",
+                                        "value": "High temperature",
+                                        "status": "ENABLED"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Disable temperature trigger for non-thermal sensors",
+                                "step": "2",
+                                "filter": {
+                                    "evaltype": "AND",
+                                    "conditions": [
+                                        {
+                                            "macro": "{#OBD_KEY}",
+                                            "value": "coolant_temp|intake_temp|ambient_air_temp|oil_temp",
+                                            "formulaid": "A",
+                                            "operator": "NOT_MATCHES_REGEX"
+                                        }
+                                    ]
+                                },
+                                "operations": [
+                                    {
+                                        "operationobject": "TRIGGER_PROTOTYPE",
+                                        "operator": "LIKE",
+                                        "value": "High temperature",
+                                        "status": "DISABLED"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Enable voltage trigger only for control_module_voltage",
+                                "step": "3",
+                                "filter": {
+                                    "evaltype": "AND",
+                                    "conditions": [
+                                        {
+                                            "macro": "{#OBD_KEY}",
+                                            "value": "control_module_voltage",
+                                            "formulaid": "A",
+                                            "operator": "MATCHES_REGEX"
+                                        }
+                                    ]
+                                },
+                                "operations": [
+                                    {
+                                        "operationobject": "TRIGGER_PROTOTYPE",
+                                        "operator": "LIKE",
+                                        "value": "Low voltage",
+                                        "status": "ENABLED"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Disable voltage trigger for non-voltage sensors",
+                                "step": "4",
+                                "filter": {
+                                    "evaltype": "AND",
+                                    "conditions": [
+                                        {
+                                            "macro": "{#OBD_KEY}",
+                                            "value": "control_module_voltage",
+                                            "formulaid": "A",
+                                            "operator": "NOT_MATCHES_REGEX"
+                                        }
+                                    ]
+                                },
+                                "operations": [
+                                    {
+                                        "operationobject": "TRIGGER_PROTOTYPE",
+                                        "operator": "LIKE",
+                                        "value": "Low voltage",
+                                        "status": "DISABLED"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Enable RPM trigger only for rpm",
+                                "step": "5",
+                                "filter": {
+                                    "evaltype": "AND",
+                                    "conditions": [
+                                        {
+                                            "macro": "{#OBD_KEY}",
+                                            "value": "^rpm$",
+                                            "formulaid": "A",
+                                            "operator": "MATCHES_REGEX"
+                                        }
+                                    ]
+                                },
+                                "operations": [
+                                    {
+                                        "operationobject": "TRIGGER_PROTOTYPE",
+                                        "operator": "LIKE",
+                                        "value": "High RPM",
+                                        "status": "ENABLED"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Disable RPM trigger for non-rpm sensors",
+                                "step": "6",
+                                "filter": {
+                                    "evaltype": "AND",
+                                    "conditions": [
+                                        {
+                                            "macro": "{#OBD_KEY}",
+                                            "value": "^rpm$",
+                                            "formulaid": "A",
+                                            "operator": "NOT_MATCHES_REGEX"
+                                        }
+                                    ]
+                                },
+                                "operations": [
+                                    {
+                                        "operationobject": "TRIGGER_PROTOTYPE",
+                                        "operator": "LIKE",
+                                        "value": "High RPM",
+                                        "status": "DISABLED"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Enable monitor trigger only for monitor_*",
+                                "step": "7",
+                                "filter": {
+                                    "evaltype": "AND",
+                                    "conditions": [
+                                        {
+                                            "macro": "{#OBD_KEY}",
+                                            "value": "^monitor_",
+                                            "formulaid": "A",
+                                            "operator": "MATCHES_REGEX"
+                                        }
+                                    ]
+                                },
+                                "operations": [
+                                    {
+                                        "operationobject": "TRIGGER_PROTOTYPE",
+                                        "operator": "LIKE",
+                                        "value": "Emission monitor failed",
+                                        "status": "ENABLED"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Disable monitor trigger for non-monitor_*",
+                                "step": "8",
+                                "filter": {
+                                    "evaltype": "AND",
+                                    "conditions": [
+                                        {
+                                            "macro": "{#OBD_KEY}",
+                                            "value": "^monitor_",
+                                            "formulaid": "A",
+                                            "operator": "NOT_MATCHES_REGEX"
+                                        }
+                                    ]
+                                },
+                                "operations": [
+                                    {
+                                        "operationobject": "TRIGGER_PROTOTYPE",
+                                        "operator": "LIKE",
+                                        "value": "Emission monitor failed",
+                                        "status": "DISABLED"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Enable catalyst trigger only for catalyst_temp",
+                                "step": "9",
+                                "filter": {
+                                    "evaltype": "AND",
+                                    "conditions": [
+                                        {
+                                            "macro": "{#OBD_KEY}",
+                                            "value": "^catalyst_temp",
+                                            "formulaid": "A",
+                                            "operator": "MATCHES_REGEX"
+                                        }
+                                    ]
+                                },
+                                "operations": [
+                                    {
+                                        "operationobject": "TRIGGER_PROTOTYPE",
+                                        "operator": "LIKE",
+                                        "value": "Excessive catalyst temperature",
+                                        "status": "ENABLED"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Disable catalyst trigger for non-catalyst_temp",
+                                "step": "10",
+                                "filter": {
+                                    "evaltype": "AND",
+                                    "conditions": [
+                                        {
+                                            "macro": "{#OBD_KEY}",
+                                            "value": "^catalyst_temp",
+                                            "formulaid": "A",
+                                            "operator": "NOT_MATCHES_REGEX"
+                                        }
+                                    ]
+                                },
+                                "operations": [
+                                    {
+                                        "operationobject": "TRIGGER_PROTOTYPE",
+                                        "operator": "LIKE",
+                                        "value": "Excessive catalyst temperature",
+                                        "status": "DISABLED"
+                                    }
+                                ]
+                            }
+                        ],
+                        "lld_macro_paths": [
+                            {
+                                "lld_macro": "{#OBD_DESC}",
+                                "path": "$.{#OBD_DESC}"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "dcd387f9e88746bdaf0c7636a9392232",
+                        "name": "OBD2 Text PID Discovery",
+                        "key": "obd.discovery.text",
+                        "type": "TRAP",
+                        "delay": "0",
+                        "lifetime": "30d",
+                        "description": "Discovers OBD2 PIDs that return text values (VIN, CALIBRATION_ID, CVN, FUEL_STATUS, OBD_COMPLIANCE).\n\nMacros:\n  {#OBD_KEY}  - key suffix (e.g. vin, calibration_id)\n  {#OBD_NAME} - readable name (e.g. VIN)",
+                        "item_prototypes": [
+                            {
+                                "uuid": "324dfe5e6c314d57a770d5ccd8da88e7",
+                                "name": "{#OBD_NAME}",
+                                "key": "obd.text[{#OBD_KEY}]",
+                                "type": "TRAP",
+                                "value_type": "CHAR",
+                                "delay": "0",
+                                "description": "{#OBD_DESC}",
+                                "tags": [
+                                    {
+                                        "tag": "component",
+                                        "value": "obd2"
+                                    },
+                                    {
+                                        "tag": "pid",
+                                        "value": "{#OBD_KEY}"
+                                    },
+                                    {
+                                        "tag": "type",
+                                        "value": "text"
+                                    }
+                                ]
+                            }
+                        ],
+                        "lld_macro_paths": [
+                            {
+                                "lld_macro": "{#OBD_DESC}",
+                                "path": "$.{#OBD_DESC}"
+                            }
+                        ]
+                    }
+                ],
+                "items": [
+                    {
+                        "uuid": "fcce06249c9547d3a9f78c7dc111a034",
+                        "name": "Fuel Consumption Rate",
+                        "type": "CALCULATED",
+                        "key": "obd.calculated[fuel_flow_lh]",
+                        "delay": "10s",
+                        "value_type": "FLOAT",
+                        "units": "L/h",
+                        "params": "(last(//obd[intake_pressure]) * last(//obd[rpm]) * ({$OBD.ENGINE.DISPLACEMENT} * {$OBD.ENGINE.VE} * 3825)) / (25660.2 * (last(//obd[intake_temp]) + 273.15) * (14.7 - 5.7 * last(//obd[ethanol_percent]) / 100) * last(//obd[commanded_equiv_ratio]))"
+                    },
+                    {
+                        "uuid": "4b84752588c84200b915855c0b01112b",
+                        "name": "Instantaneous Fuel Economy",
+                        "type": "CALCULATED",
+                        "key": "obd.calculated[fuel_economy_kml]",
+                        "delay": "10s",
+                        "value_type": "FLOAT",
+                        "units": "km/L",
+                        "params": "last(//obd[speed]) / ((last(//obd[intake_pressure]) * last(//obd[rpm]) * ({$OBD.ENGINE.DISPLACEMENT} * {$OBD.ENGINE.VE} * 3825)) / (25660.2 * (last(//obd[intake_temp]) + 273.15) * (14.7 - 5.7 * last(//obd[ethanol_percent]) / 100) * last(//obd[commanded_equiv_ratio])))"
+                    },
+                    {
+                        "uuid": "fd42e1bb1e5940a39af45e7325f37bbb",
+                        "name": "Total Fuel Trim",
+                        "type": "CALCULATED",
+                        "key": "obd.calculated[total_fuel_trim]",
+                        "delay": "10s",
+                        "value_type": "FLOAT",
+                        "units": "%",
+                        "params": "last(//obd[short_fuel_trim_1]) + last(//obd[long_fuel_trim_1])"
+                    },
+                    {
+                        "uuid": "6bb07eecc1444e91b29e65c1a1d40e06",
+                        "name": "Intake Manifold Vacuum",
+                        "type": "CALCULATED",
+                        "key": "obd.calculated[manifold_vacuum]",
+                        "delay": "10s",
+                        "value_type": "FLOAT",
+                        "units": "kPa",
+                        "params": "last(//obd[barometric_pressure]) - last(//obd[intake_pressure])"
+                    },
+                    {
+                        "uuid": "98ae8f5a01284a1c8caac9eb56a81664",
+                        "name": "Engine Thermal Rise",
+                        "type": "CALCULATED",
+                        "key": "obd.calculated[engine_thermal_rise]",
+                        "delay": "10s",
+                        "value_type": "FLOAT",
+                        "units": "°C",
+                        "params": "last(//obd[coolant_temp]) - last(//obd[ambiant_air_temp])"
+                    },
+                    {
+                        "uuid": "891930e529024c35bcc9ba503a594cf4",
+                        "name": "Catalyst Temperature Delta",
+                        "type": "CALCULATED",
+                        "key": "obd.calculated[catalyst_delta_temp]",
+                        "delay": "10s",
+                        "value_type": "FLOAT",
+                        "units": "°C",
+                        "params": "last(//obd[catalyst_temp_b1s1]) - last(//obd[coolant_temp])"
+                    },
+                    {
+                        "uuid": "fc307bea7cdc4d28bc491cdf8941f959",
+                        "name": "Estimated Engine Power",
+                        "type": "CALCULATED",
+                        "key": "obd.calculated[engine_power_kw]",
+                        "delay": "10s",
+                        "value_type": "FLOAT",
+                        "units": "kW",
+                        "params": "last(//obd[absolute_load]) / 100 * 55.9"
+                    },
+                    {
+                        "uuid": "e51816679e0c4d0c97f73f85e13113c5",
+                        "name": "Engine Run Time",
+                        "type": "CALCULATED",
+                        "key": "obd.calculated[run_time_min]",
+                        "delay": "10s",
+                        "value_type": "FLOAT",
+                        "units": "min",
+                        "params": "last(//obd[run_time]) / 60"
+                    }
+                ],
+                "macros": [
+                    {
+                        "macro": "{$OBD.ENGINE.DISPLACEMENT}",
+                        "value": "1.0",
+                        "description": "Engine displacement in liters (e.g. 1.0, 1.6, 2.0)"
+                    },
+                    {
+                        "macro": "{$OBD.ENGINE.VE}",
+                        "value": "0.80",
+                        "description": "Volumetric Efficiency of the engine (typically 0.80 to 0.85 for naturally aspirated, >1.0 for turbo)"
+                    }
+                ]
+            }
+        ]
+    }
+}

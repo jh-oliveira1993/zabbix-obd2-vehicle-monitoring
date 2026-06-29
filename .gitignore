@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.log
+venv/
+.venv/
+.env
+
+# Zabbix local exports
+*.json.bak
+
+# OS
+.DS_Store
+Thumbs.db
