@@ -18,24 +18,115 @@
                         "name": "Templates/Automotive"
                     }
                 ],
+                "items": [
+                    {
+                        "uuid": "891930e529024c35bcc9ba503a594cf4",
+                        "name": "Catalyst Temperature Delta",
+                        "type": "CALCULATED",
+                        "key": "obd.calculated[catalyst_delta_temp]",
+                        "delay": "10s",
+                        "history": "180d",
+                        "value_type": "FLOAT",
+                        "units": "\u00b0C",
+                        "params": "last(//obd[catalyst_temp_b1s1]) - last(//obd[coolant_temp])"
+                    },
+                    {
+                        "uuid": "fc307bea7cdc4d28bc491cdf8941f959",
+                        "name": "Estimated Engine Power",
+                        "type": "CALCULATED",
+                        "key": "obd.calculated[engine_power_kw]",
+                        "delay": "10s",
+                        "history": "180d",
+                        "value_type": "FLOAT",
+                        "units": "kW",
+                        "params": "last(//obd[absolute_load]) / 100 * 55.9"
+                    },
+                    {
+                        "uuid": "98ae8f5a01284a1c8caac9eb56a81664",
+                        "name": "Engine Thermal Rise",
+                        "type": "CALCULATED",
+                        "key": "obd.calculated[engine_thermal_rise]",
+                        "delay": "10s",
+                        "history": "180d",
+                        "value_type": "FLOAT",
+                        "units": "\u00b0C",
+                        "params": "last(//obd[coolant_temp]) - last(//obd[ambiant_air_temp])"
+                    },
+                    {
+                        "uuid": "4b84752588c84200b915855c0b01112b",
+                        "name": "Instantaneous Fuel Economy",
+                        "type": "CALCULATED",
+                        "key": "obd.calculated[fuel_economy_kml]",
+                        "delay": "10s",
+                        "history": "180d",
+                        "value_type": "FLOAT",
+                        "units": "km/L",
+                        "params": "last(//obd[speed]) / ((last(//obd[intake_pressure]) * last(//obd[rpm]) * ({$OBD.ENGINE.DISPLACEMENT} * {$OBD.ENGINE.VE} * 3825)) / (25660.2 * (last(//obd[intake_temp]) + 273.15) * (14.7 - 5.7 * last(//obd[ethanol_percent]) / 100) * last(//obd[commanded_equiv_ratio])))"
+                    },
+                    {
+                        "uuid": "fcce06249c9547d3a9f78c7dc111a034",
+                        "name": "Fuel Consumption Rate",
+                        "type": "CALCULATED",
+                        "key": "obd.calculated[fuel_flow_lh]",
+                        "delay": "10s",
+                        "history": "180d",
+                        "value_type": "FLOAT",
+                        "units": "L/h",
+                        "params": "(last(//obd[intake_pressure]) * last(//obd[rpm]) * ({$OBD.ENGINE.DISPLACEMENT} * {$OBD.ENGINE.VE} * 3825)) / (25660.2 * (last(//obd[intake_temp]) + 273.15) * (14.7 - 5.7 * last(//obd[ethanol_percent]) / 100) * last(//obd[commanded_equiv_ratio]))"
+                    },
+                    {
+                        "uuid": "6bb07eecc1444e91b29e65c1a1d40e06",
+                        "name": "Intake Manifold Vacuum",
+                        "type": "CALCULATED",
+                        "key": "obd.calculated[manifold_vacuum]",
+                        "delay": "10s",
+                        "history": "180d",
+                        "value_type": "FLOAT",
+                        "units": "kPa",
+                        "params": "last(//obd[barometric_pressure]) - last(//obd[intake_pressure])"
+                    },
+                    {
+                        "uuid": "e51816679e0c4d0c97f73f85e13113c5",
+                        "name": "Engine Run Time",
+                        "type": "CALCULATED",
+                        "key": "obd.calculated[run_time_min]",
+                        "delay": "10s",
+                        "history": "180d",
+                        "value_type": "FLOAT",
+                        "units": "min",
+                        "params": "last(//obd[run_time]) / 60"
+                    },
+                    {
+                        "uuid": "fd42e1bb1e5940a39af45e7325f37bbb",
+                        "name": "Total Fuel Trim",
+                        "type": "CALCULATED",
+                        "key": "obd.calculated[total_fuel_trim]",
+                        "delay": "10s",
+                        "history": "180d",
+                        "value_type": "FLOAT",
+                        "units": "%",
+                        "params": "last(//obd[short_fuel_trim_1]) + last(//obd[long_fuel_trim_1])"
+                    }
+                ],
                 "discovery_rules": [
                     {
                         "uuid": "2ff7e51f226a4e4a876513ac8456eb04",
                         "name": "OBD2 PID Discovery",
-                        "key": "obd.discovery",
                         "type": "TRAP",
+                        "key": "obd.discovery",
                         "delay": "0",
                         "lifetime": "30d",
-                        "description": "Automatically discovers all OBD2 PIDs supported by the ECU.\n\nThe telemetry.py script sends the discovery payload upon connection and every hour.\n\nAvailable macros:\n  {#OBD_KEY}  — key suffix (e.g. rpm, speed, coolant_temp)\n  {#OBD_NAME} — readable name (e.g. Engine RPM)\n  {#OBD_UNIT} — measurement unit (e.g. rpm, km/h, °C)",
+                        "description": "Automatically discovers all OBD2 PIDs supported by the ECU.\n\nThe telemetry.py script sends the discovery payload upon connection and every hour.\n\nAvailable macros:\n  {#OBD_KEY}  \u2014 key suffix (e.g. rpm, speed, coolant_temp)\n  {#OBD_NAME} \u2014 readable name (e.g. Engine RPM)\n  {#OBD_UNIT} \u2014 measurement unit (e.g. rpm, km/h, \u00b0C)",
                         "item_prototypes": [
                             {
                                 "uuid": "f83d8a5f9e274ecc919232b2ed634e73",
                                 "name": "{#OBD_NAME}",
-                                "key": "obd[{#OBD_KEY}]",
                                 "type": "TRAP",
+                                "key": "obd[{#OBD_KEY}]",
+                                "delay": "0",
+                                "history": "180d",
                                 "value_type": "FLOAT",
                                 "units": "{#OBD_UNIT}",
-                                "delay": "0",
                                 "description": "{#OBD_DESC}",
                                 "tags": [
                                     {
@@ -50,102 +141,102 @@
                                         "tag": "source",
                                         "value": "ecu"
                                     }
-                                ]
-                            }
-                        ],
-                        "trigger_prototypes": [
-                            {
-                                "uuid": "ec39523e38f14634ac87c4972daef336",
-                                "expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])>{$OBD.TEMP.HIGH}",
-                                "recovery_mode": "RECOVERY_EXPRESSION",
-                                "recovery_expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])<{$OBD.TEMP.HIGH.RECOVERY}",
-                                "name": "High temperature: {#OBD_NAME} ({ITEM.LASTVALUE})",
-                                "priority": "HIGH",
-                                "description": "Thermal sensor above {$OBD.TEMP.HIGH}°C.\nRecovery: below {$OBD.TEMP.HIGH.RECOVERY}°C.\n\nPID: obd[{#OBD_KEY}]",
-                                "tags": [
+                                ],
+                                "trigger_prototypes": [
                                     {
-                                        "tag": "scope",
-                                        "value": "availability"
+                                        "uuid": "ba9f45379ab142a28f317cca7a00ebc0",
+                                        "expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])=0",
+                                        "recovery_mode": "RECOVERY_EXPRESSION",
+                                        "recovery_expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])=1",
+                                        "name": "Emission monitor failed: {#OBD_NAME}",
+                                        "priority": "AVERAGE",
+                                        "description": "Emission monitor returned 0 (failed or incomplete).\n1 = passed / 0 = failed or not completed.\nPID: obd[{#OBD_KEY}]",
+                                        "tags": [
+                                            {
+                                                "tag": "scope",
+                                                "value": "availability"
+                                            },
+                                            {
+                                                "tag": "type",
+                                                "value": "emission_monitor"
+                                            }
+                                        ]
                                     },
                                     {
-                                        "tag": "type",
-                                        "value": "temperature"
-                                    }
-                                ]
-                            },
-                            {
-                                "uuid": "63a8d61a0bc849d1bba5cc47bcda97ec",
-                                "expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])<{$OBD.VOLTAGE.LOW}",
-                                "recovery_mode": "RECOVERY_EXPRESSION",
-                                "recovery_expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])>{$OBD.VOLTAGE.LOW.RECOVERY}",
-                                "name": "Low voltage: {#OBD_NAME} ({ITEM.LASTVALUE}V)",
-                                "priority": "WARNING",
-                                "description": "Control module voltage below {$OBD.VOLTAGE.LOW}V.\nPossible alternator or battery issue.\nRecovery: above {$OBD.VOLTAGE.LOW.RECOVERY}V.\n\nPID: obd[{#OBD_KEY}]",
-                                "tags": [
-                                    {
-                                        "tag": "scope",
-                                        "value": "availability"
+                                        "uuid": "ebe09a9a8f7647c898b17c243f961a6b",
+                                        "expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])>{$OBD.CATALYST.HIGH}",
+                                        "recovery_mode": "RECOVERY_EXPRESSION",
+                                        "recovery_expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])<{$OBD.CATALYST.HIGH.RECOVERY}",
+                                        "name": "Excessive catalyst temperature: {#OBD_NAME} ({ITEM.LASTVALUE})",
+                                        "priority": "HIGH",
+                                        "description": "Catalyst temperature above {$OBD.CATALYST.HIGH} \u00b0C.\nNormal operating range: 400-900 \u00b0C.\nAbove {$OBD.CATALYST.HIGH} \u00b0C may indicate overload or fuel system issues.\nRecovery: below {$OBD.CATALYST.HIGH.RECOVERY} \u00b0C.\nPID: obd[{#OBD_KEY}]",
+                                        "tags": [
+                                            {
+                                                "tag": "scope",
+                                                "value": "availability"
+                                            },
+                                            {
+                                                "tag": "type",
+                                                "value": "temperature"
+                                            }
+                                        ]
                                     },
                                     {
-                                        "tag": "type",
-                                        "value": "voltage"
-                                    }
-                                ]
-                            },
-                            {
-                                "uuid": "f4f613d853174a7f8aef616b02928ec3",
-                                "expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])>{$OBD.RPM.HIGH}",
-                                "recovery_mode": "RECOVERY_EXPRESSION",
-                                "recovery_expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])<{$OBD.RPM.HIGH.RECOVERY}",
-                                "name": "High RPM: {#OBD_NAME} ({ITEM.LASTVALUE}rpm)",
-                                "priority": "AVERAGE",
-                                "description": "Engine rotation above {$OBD.RPM.HIGH} RPM.\nRecovery: below {$OBD.RPM.HIGH.RECOVERY} RPM.\n\nPID: obd[{#OBD_KEY}]",
-                                "tags": [
-                                    {
-                                        "tag": "scope",
-                                        "value": "performance"
+                                        "uuid": "f4f613d853174a7f8aef616b02928ec3",
+                                        "expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])>{$OBD.RPM.HIGH}",
+                                        "recovery_mode": "RECOVERY_EXPRESSION",
+                                        "recovery_expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])<{$OBD.RPM.HIGH.RECOVERY}",
+                                        "name": "High RPM: {#OBD_NAME} ({ITEM.LASTVALUE}rpm)",
+                                        "priority": "AVERAGE",
+                                        "description": "Engine rotation above {$OBD.RPM.HIGH} RPM.\nRecovery: below {$OBD.RPM.HIGH.RECOVERY} RPM.\n\nPID: obd[{#OBD_KEY}]",
+                                        "tags": [
+                                            {
+                                                "tag": "scope",
+                                                "value": "performance"
+                                            },
+                                            {
+                                                "tag": "type",
+                                                "value": "rpm"
+                                            }
+                                        ]
                                     },
                                     {
-                                        "tag": "type",
-                                        "value": "rpm"
-                                    }
-                                ]
-                            },
-                            {
-                                "uuid": "ba9f45379ab142a28f317cca7a00ebc0",
-                                "expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])=0",
-                                "recovery_mode": "RECOVERY_EXPRESSION",
-                                "recovery_expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])=1",
-                                "name": "Emission monitor failed: {#OBD_NAME}",
-                                "priority": "AVERAGE",
-                                "description": "Emission monitor returned 0 (failed or incomplete).\n1 = passed / 0 = failed or not completed.\nPID: obd[{#OBD_KEY}]",
-                                "tags": [
-                                    {
-                                        "tag": "scope",
-                                        "value": "availability"
+                                        "uuid": "ec39523e38f14634ac87c4972daef336",
+                                        "expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])>{$OBD.TEMP.HIGH}",
+                                        "recovery_mode": "RECOVERY_EXPRESSION",
+                                        "recovery_expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])<{$OBD.TEMP.HIGH.RECOVERY}",
+                                        "name": "High temperature: {#OBD_NAME} ({ITEM.LASTVALUE})",
+                                        "priority": "HIGH",
+                                        "description": "Thermal sensor above {$OBD.TEMP.HIGH}\u00b0C.\nRecovery: below {$OBD.TEMP.HIGH.RECOVERY}\u00b0C.\n\nPID: obd[{#OBD_KEY}]",
+                                        "tags": [
+                                            {
+                                                "tag": "scope",
+                                                "value": "availability"
+                                            },
+                                            {
+                                                "tag": "type",
+                                                "value": "temperature"
+                                            }
+                                        ]
                                     },
                                     {
-                                        "tag": "type",
-                                        "value": "emission_monitor"
-                                    }
-                                ]
-                            },
-                            {
-                                "uuid": "ebe09a9a8f7647c898b17c243f961a6b",
-                                "expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])>{$OBD.CATALYST.HIGH}",
-                                "recovery_mode": "RECOVERY_EXPRESSION",
-                                "recovery_expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])<{$OBD.CATALYST.HIGH.RECOVERY}",
-                                "name": "Excessive catalyst temperature: {#OBD_NAME} ({ITEM.LASTVALUE})",
-                                "priority": "HIGH",
-                                "description": "Catalyst temperature above {$OBD.CATALYST.HIGH} °C.\nNormal operating range: 400-900 °C.\nAbove {$OBD.CATALYST.HIGH} °C may indicate overload or fuel system issues.\nRecovery: below {$OBD.CATALYST.HIGH.RECOVERY} °C.\nPID: obd[{#OBD_KEY}]",
-                                "tags": [
-                                    {
-                                        "tag": "scope",
-                                        "value": "availability"
-                                    },
-                                    {
-                                        "tag": "type",
-                                        "value": "temperature"
+                                        "uuid": "63a8d61a0bc849d1bba5cc47bcda97ec",
+                                        "expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])<{$OBD.VOLTAGE.LOW}",
+                                        "recovery_mode": "RECOVERY_EXPRESSION",
+                                        "recovery_expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])>{$OBD.VOLTAGE.LOW.RECOVERY}",
+                                        "name": "Low voltage: {#OBD_NAME} ({ITEM.LASTVALUE}V)",
+                                        "priority": "WARNING",
+                                        "description": "Control module voltage below {$OBD.VOLTAGE.LOW}V.\nPossible alternator or battery issue.\nRecovery: above {$OBD.VOLTAGE.LOW.RECOVERY}V.\n\nPID: obd[{#OBD_KEY}]",
+                                        "tags": [
+                                            {
+                                                "tag": "scope",
+                                                "value": "availability"
+                                            },
+                                            {
+                                                "tag": "type",
+                                                "value": "voltage"
+                                            }
+                                        ]
                                     }
                                 ]
                             }
@@ -166,6 +257,12 @@
                                 ]
                             }
                         ],
+                        "lld_macro_paths": [
+                            {
+                                "lld_macro": "{#OBD_DESC}",
+                                "path": "$.{#OBD_DESC}"
+                            }
+                        ],
                         "overrides": [
                             {
                                 "name": "Enable temperature trigger for thermal sensors",
@@ -176,8 +273,7 @@
                                         {
                                             "macro": "{#OBD_KEY}",
                                             "value": "coolant_temp|intake_temp|ambient_air_temp|oil_temp",
-                                            "formulaid": "A",
-                                            "operator": "MATCHES_REGEX"
+                                            "formulaid": "A"
                                         }
                                     ]
                                 },
@@ -199,8 +295,8 @@
                                         {
                                             "macro": "{#OBD_KEY}",
                                             "value": "coolant_temp|intake_temp|ambient_air_temp|oil_temp",
-                                            "formulaid": "A",
-                                            "operator": "NOT_MATCHES_REGEX"
+                                            "operator": "NOT_MATCHES_REGEX",
+                                            "formulaid": "A"
                                         }
                                     ]
                                 },
@@ -222,8 +318,7 @@
                                         {
                                             "macro": "{#OBD_KEY}",
                                             "value": "control_module_voltage",
-                                            "formulaid": "A",
-                                            "operator": "MATCHES_REGEX"
+                                            "formulaid": "A"
                                         }
                                     ]
                                 },
@@ -245,8 +340,8 @@
                                         {
                                             "macro": "{#OBD_KEY}",
                                             "value": "control_module_voltage",
-                                            "formulaid": "A",
-                                            "operator": "NOT_MATCHES_REGEX"
+                                            "operator": "NOT_MATCHES_REGEX",
+                                            "formulaid": "A"
                                         }
                                     ]
                                 },
@@ -268,8 +363,7 @@
                                         {
                                             "macro": "{#OBD_KEY}",
                                             "value": "^rpm$",
-                                            "formulaid": "A",
-                                            "operator": "MATCHES_REGEX"
+                                            "formulaid": "A"
                                         }
                                     ]
                                 },
@@ -291,8 +385,8 @@
                                         {
                                             "macro": "{#OBD_KEY}",
                                             "value": "^rpm$",
-                                            "formulaid": "A",
-                                            "operator": "NOT_MATCHES_REGEX"
+                                            "operator": "NOT_MATCHES_REGEX",
+                                            "formulaid": "A"
                                         }
                                     ]
                                 },
@@ -314,8 +408,7 @@
                                         {
                                             "macro": "{#OBD_KEY}",
                                             "value": "^monitor_",
-                                            "formulaid": "A",
-                                            "operator": "MATCHES_REGEX"
+                                            "formulaid": "A"
                                         }
                                     ]
                                 },
@@ -337,8 +430,8 @@
                                         {
                                             "macro": "{#OBD_KEY}",
                                             "value": "^monitor_",
-                                            "formulaid": "A",
-                                            "operator": "NOT_MATCHES_REGEX"
+                                            "operator": "NOT_MATCHES_REGEX",
+                                            "formulaid": "A"
                                         }
                                     ]
                                 },
@@ -360,8 +453,7 @@
                                         {
                                             "macro": "{#OBD_KEY}",
                                             "value": "^catalyst_temp",
-                                            "formulaid": "A",
-                                            "operator": "MATCHES_REGEX"
+                                            "formulaid": "A"
                                         }
                                     ]
                                 },
@@ -383,8 +475,8 @@
                                         {
                                             "macro": "{#OBD_KEY}",
                                             "value": "^catalyst_temp",
-                                            "formulaid": "A",
-                                            "operator": "NOT_MATCHES_REGEX"
+                                            "operator": "NOT_MATCHES_REGEX",
+                                            "formulaid": "A"
                                         }
                                     ]
                                 },
@@ -397,19 +489,13 @@
                                     }
                                 ]
                             }
-                        ],
-                        "lld_macro_paths": [
-                            {
-                                "lld_macro": "{#OBD_DESC}",
-                                "path": "$.{#OBD_DESC}"
-                            }
                         ]
                     },
                     {
                         "uuid": "dcd387f9e88746bdaf0c7636a9392232",
                         "name": "OBD2 Text PID Discovery",
-                        "key": "obd.discovery.text",
                         "type": "TRAP",
+                        "key": "obd.discovery.text",
                         "delay": "0",
                         "lifetime": "30d",
                         "description": "Discovers OBD2 PIDs that return text values (VIN, CALIBRATION_ID, CVN, FUEL_STATUS, OBD_COMPLIANCE).\n\nMacros:\n  {#OBD_KEY}  - key suffix (e.g. vin, calibration_id)\n  {#OBD_NAME} - readable name (e.g. VIN)",
@@ -417,10 +503,11 @@
                             {
                                 "uuid": "324dfe5e6c314d57a770d5ccd8da88e7",
                                 "name": "{#OBD_NAME}",
-                                "key": "obd.text[{#OBD_KEY}]",
                                 "type": "TRAP",
-                                "value_type": "CHAR",
+                                "key": "obd.text[{#OBD_KEY}]",
                                 "delay": "0",
+                                "value_type": "CHAR",
+                                "trends": "0",
                                 "description": "{#OBD_DESC}",
                                 "tags": [
                                     {
@@ -446,98 +533,16 @@
                         ]
                     }
                 ],
-                "items": [
-                    {
-                        "uuid": "fcce06249c9547d3a9f78c7dc111a034",
-                        "name": "Fuel Consumption Rate",
-                        "type": "CALCULATED",
-                        "key": "obd.calculated[fuel_flow_lh]",
-                        "delay": "10s",
-                        "value_type": "FLOAT",
-                        "units": "L/h",
-                        "params": "(last(//obd[intake_pressure]) * last(//obd[rpm]) * ({$OBD.ENGINE.DISPLACEMENT} * {$OBD.ENGINE.VE} * 3825)) / (25660.2 * (last(//obd[intake_temp]) + 273.15) * (14.7 - 5.7 * last(//obd[ethanol_percent]) / 100) * last(//obd[commanded_equiv_ratio]))"
-                    },
-                    {
-                        "uuid": "4b84752588c84200b915855c0b01112b",
-                        "name": "Instantaneous Fuel Economy",
-                        "type": "CALCULATED",
-                        "key": "obd.calculated[fuel_economy_kml]",
-                        "delay": "10s",
-                        "value_type": "FLOAT",
-                        "units": "km/L",
-                        "params": "last(//obd[speed]) / ((last(//obd[intake_pressure]) * last(//obd[rpm]) * ({$OBD.ENGINE.DISPLACEMENT} * {$OBD.ENGINE.VE} * 3825)) / (25660.2 * (last(//obd[intake_temp]) + 273.15) * (14.7 - 5.7 * last(//obd[ethanol_percent]) / 100) * last(//obd[commanded_equiv_ratio])))"
-                    },
-                    {
-                        "uuid": "fd42e1bb1e5940a39af45e7325f37bbb",
-                        "name": "Total Fuel Trim",
-                        "type": "CALCULATED",
-                        "key": "obd.calculated[total_fuel_trim]",
-                        "delay": "10s",
-                        "value_type": "FLOAT",
-                        "units": "%",
-                        "params": "last(//obd[short_fuel_trim_1]) + last(//obd[long_fuel_trim_1])"
-                    },
-                    {
-                        "uuid": "6bb07eecc1444e91b29e65c1a1d40e06",
-                        "name": "Intake Manifold Vacuum",
-                        "type": "CALCULATED",
-                        "key": "obd.calculated[manifold_vacuum]",
-                        "delay": "10s",
-                        "value_type": "FLOAT",
-                        "units": "kPa",
-                        "params": "last(//obd[barometric_pressure]) - last(//obd[intake_pressure])"
-                    },
-                    {
-                        "uuid": "98ae8f5a01284a1c8caac9eb56a81664",
-                        "name": "Engine Thermal Rise",
-                        "type": "CALCULATED",
-                        "key": "obd.calculated[engine_thermal_rise]",
-                        "delay": "10s",
-                        "value_type": "FLOAT",
-                        "units": "°C",
-                        "params": "last(//obd[coolant_temp]) - last(//obd[ambiant_air_temp])"
-                    },
-                    {
-                        "uuid": "891930e529024c35bcc9ba503a594cf4",
-                        "name": "Catalyst Temperature Delta",
-                        "type": "CALCULATED",
-                        "key": "obd.calculated[catalyst_delta_temp]",
-                        "delay": "10s",
-                        "value_type": "FLOAT",
-                        "units": "°C",
-                        "params": "last(//obd[catalyst_temp_b1s1]) - last(//obd[coolant_temp])"
-                    },
-                    {
-                        "uuid": "fc307bea7cdc4d28bc491cdf8941f959",
-                        "name": "Estimated Engine Power",
-                        "type": "CALCULATED",
-                        "key": "obd.calculated[engine_power_kw]",
-                        "delay": "10s",
-                        "value_type": "FLOAT",
-                        "units": "kW",
-                        "params": "last(//obd[absolute_load]) / 100 * 55.9"
-                    },
-                    {
-                        "uuid": "e51816679e0c4d0c97f73f85e13113c5",
-                        "name": "Engine Run Time",
-                        "type": "CALCULATED",
-                        "key": "obd.calculated[run_time_min]",
-                        "delay": "10s",
-                        "value_type": "FLOAT",
-                        "units": "min",
-                        "params": "last(//obd[run_time]) / 60"
-                    }
-                ],
                 "macros": [
                     {
                         "macro": "{$OBD.CATALYST.HIGH}",
                         "value": "950",
-                        "description": "Excessive temperature threshold for catalyst (°C)"
+                        "description": "Excessive temperature threshold for catalyst (\u00b0C)"
                     },
                     {
                         "macro": "{$OBD.CATALYST.HIGH.RECOVERY}",
                         "value": "900",
-                        "description": "Recovery temperature for catalyst (°C)"
+                        "description": "Recovery temperature for catalyst (\u00b0C)"
                     },
                     {
                         "macro": "{$OBD.ENGINE.DISPLACEMENT}",
@@ -562,12 +567,12 @@
                     {
                         "macro": "{$OBD.TEMP.HIGH}",
                         "value": "110",
-                        "description": "High temperature threshold for thermal sensors (°C)"
+                        "description": "High temperature threshold for thermal sensors (\u00b0C)"
                     },
                     {
                         "macro": "{$OBD.TEMP.HIGH.RECOVERY}",
                         "value": "100",
-                        "description": "Recovery temperature for thermal sensors (°C)"
+                        "description": "Recovery temperature for thermal sensors (\u00b0C)"
                     },
                     {
                         "macro": "{$OBD.VOLTAGE.LOW}",

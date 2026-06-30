@@ -17,4 +17,4 @@ End-to-end communication was validated using the following tests during developm
 - **Mapped Protocol:** The test vehicle natively negotiates via the `ISO 15765-4 (CAN 11/500)` protocol and supports standard OBD2 commands (PIDs).
 
 ## 4. Edge Telemetry Collector Daemon
-The final telemetry daemon (`src/telemetry.py`) uses a pure-Python Zabbix Sender protocol implementation to send metrics to Zabbix. This approach avoids spawning external binaries, reducing overhead and improving reliability on Android platforms.
+The final telemetry daemon (`clients/python-termux/telemetry.py`) uses a pure-Python Zabbix Sender protocol implementation to send metrics to Zabbix. This approach avoids spawning external binaries, reducing overhead and improving reliability on Android platforms.

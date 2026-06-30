@@ -31,7 +31,7 @@ Because this project is designed to run on resource-constrained edge gateways (l
       │ (Bluetooth SPP Profile)
 [Android Gateway (Termux / Bluetooth to TCP Bridge App)]
       │ (Python-OBD queries socket://127.0.0.1:35000)
-[Python Collector Script (src/telemetry.py)]
+[Python Collector Script (clients/python-termux/telemetry.py)]
       │ (TCP Zabbix Sender Protocol via Mobile Data)
 [Zabbix Server / Proxy]
 ```
@@ -46,14 +46,16 @@ The Android app reads the SPP (Serial Port Profile) stream from the paired Bluet
 ```
 zabbix-obd2-vehicle-monitoring/
 ├── README.md
-├── requirements.txt
 ├── .gitignore
 ├── docs/
 │   └── architecture.md       # High-level architecture and hardware details
 ├── zabbix/
 │   └── generic_telemetry_by_obd2.json # Universal Zabbix 7.0 template
-└── src/
-    └── telemetry.py          # Python telemetry collector daemon
+└── clients/
+    ├── python-termux/        # Python telemetry collector daemon for smartphones
+    │   ├── telemetry.py
+    │   └── requirements.txt
+    └── esp32/                # ESP32 C++ OBD2 collector (WIP)
 ```
 
 ## Requirements
@@ -82,7 +84,7 @@ On your Android/Termux or Linux terminal, clone this repository and install depe
 
 ```bash
 git clone https://github.com/jh-oliveira1993/zabbix-obd2-vehicle-monitoring.git
-cd zabbix-obd2-vehicle-monitoring
+cd zabbix-obd2-vehicle-monitoring/clients/python-termux
 pip install -r requirements.txt
 ```
 
@@ -94,7 +96,7 @@ export ZABBIX_HOST="My Vehicle"
 export ZABBIX_SERVER="your-zabbix-server-ip-or-dns"
 export OBD_URI="socket://127.0.0.1:35000"
 
-python3 src/telemetry.py
+python3 telemetry.py
 ```
 
 ### Environment Variables
