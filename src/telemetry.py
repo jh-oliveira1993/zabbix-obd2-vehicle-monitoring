@@ -7,6 +7,11 @@ import logging
 import logging.handlers
 import sys
 import os
+import ssl
+try:
+    import sslpsk3
+except ImportError:
+    sslpsk3 = None
 
 # ==========================================
 # LOGGING CONFIGURATION
@@ -37,6 +42,9 @@ ZABBIX_SERVER  = os.environ.get("ZABBIX_SERVER", "localhost")
 ZABBIX_PORT    = int(os.environ.get("ZABBIX_PORT", 10051))
 ZABBIX_HOST    = os.environ.get("ZABBIX_HOST", "Generic OBD2")
 ZABBIX_TIMEOUT = 5                           # TCP connection timeout in seconds
+ZABBIX_TLS_CONNECT = os.environ.get("ZABBIX_TLS_CONNECT", "unencrypted").lower()
+ZABBIX_TLS_PSK_IDENTITY = os.environ.get("ZABBIX_TLS_PSK_IDENTITY", "")
+ZABBIX_TLS_PSK = os.environ.get("ZABBIX_TLS_PSK", "")
 
 # ==========================================
 # RECONNECTION SETTINGS (BACKOFF)
@@ -245,9 +253,38 @@ def dispatch_zabbix_batch(items: list) -> None:
         with socket.create_connection(
             (ZABBIX_SERVER, ZABBIX_PORT), timeout=ZABBIX_TIMEOUT
         ) as sock:
-            sock.sendall(packet)
-            response = sock.recv(4096)
-            log.debug("Batch sent (%d items) | Response: %s", len(items), response)
+            if ZABBIX_TLS_CONNECT == "psk":
+                if not sslpsk3:
+                    log.error("ZABBIX_TLS_CONNECT is set to 'psk' but 'sslpsk3' module is not installed.")
+                    return
+                if not ZABBIX_TLS_PSK_IDENTITY or not ZABBIX_TLS_PSK:
+                    log.error("ZABBIX_TLS_PSK_IDENTITY and ZABBIX_TLS_PSK must be provided when using PSK encryption.")
+                    return
+                try:
+                    psk_bytes = bytes.fromhex(ZABBIX_TLS_PSK)
+                except ValueError:
+                    log.error("ZABBIX_TLS_PSK must be a valid hex string.")
+                    return
+
+                # Zabbix requires exactly this format for PSK tuple in sslpsk
+                # Wrap socket *after* connecting to the remote host (since it's already connected via create_connection)
+                with sslpsk3.wrap_socket(
+                    sock,
+                    psk=(psk_bytes, ZABBIX_TLS_PSK_IDENTITY.encode("utf-8")),
+                    ssl_version=ssl.PROTOCOL_TLSv1_2,
+                    ciphers='PSK-AES128-CBC-SHA',
+                    server_side=False,
+                    # Zabbix PSK typically uses these ciphers; sslpsk3 should negotiate automatically
+                    # but we allow any supported by default.
+                    cert_reqs=ssl.CERT_NONE # Not using certificates
+                ) as tls_sock:
+                    tls_sock.sendall(packet)
+                    response = tls_sock.recv(4096)
+                    log.debug("Batch sent (%d items) | Response: %s", len(items), response)
+            else:
+                sock.sendall(packet)
+                response = sock.recv(4096)
+                log.debug("Batch sent (%d items) | Response: %s", len(items), response)
     except OSError as exc:
         log.error("Erro de rede ao enviar batch ao Zabbix: %s", exc)
     except Exception as exc:  # pylint: disable=broad-except
