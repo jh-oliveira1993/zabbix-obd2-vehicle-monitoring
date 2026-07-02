@@ -61,7 +61,7 @@
                         "history": "180d",
                         "value_type": "FLOAT",
                         "units": "km/L",
-                        "params": "last(//obd[speed]) / ((last(//obd[intake_pressure]) * last(//obd[rpm]) * ({$OBD.ENGINE.DISPLACEMENT} * {$OBD.ENGINE.VE} * 3825)) / (25660.2 * (last(//obd[intake_temp]) + 273.15) * (14.7 - 5.7 * last(//obd[ethanol_percent]) / 100) * last(//obd[commanded_equiv_ratio])))"
+                        "params": "last(//obd[speed]) / (((last(//obd[intake_pressure]) * last(//obd[rpm]) * ({$OBD.ENGINE.DISPLACEMENT} * {$OBD.ENGINE.VE} * 3825)) / (25660.2 * (last(//obd[intake_temp]) + 273.15) * (14.7 - 5.7 * last(//obd[ethanol_percent]) / 100) * (last(//obd[commanded_equiv_ratio]) + 0.001))) + 0.001)"
                     },
                     {
                         "uuid": "fcce06249c9547d3a9f78c7dc111a034",
@@ -72,7 +72,7 @@
                         "history": "180d",
                         "value_type": "FLOAT",
                         "units": "L/h",
-                        "params": "(last(//obd[intake_pressure]) * last(//obd[rpm]) * ({$OBD.ENGINE.DISPLACEMENT} * {$OBD.ENGINE.VE} * 3825)) / (25660.2 * (last(//obd[intake_temp]) + 273.15) * (14.7 - 5.7 * last(//obd[ethanol_percent]) / 100) * last(//obd[commanded_equiv_ratio]))"
+                        "params": "(last(//obd[intake_pressure]) * last(//obd[rpm]) * ({$OBD.ENGINE.DISPLACEMENT} * {$OBD.ENGINE.VE} * 3825)) / (25660.2 * (last(//obd[intake_temp]) + 273.15) * (14.7 - 5.7 * last(//obd[ethanol_percent]) / 100) * (last(//obd[commanded_equiv_ratio]) + 0.001))"
                     },
                     {
                         "uuid": "6bb07eecc1444e91b29e65c1a1d40e06",
@@ -255,12 +255,6 @@
                                         }
                                     }
                                 ]
-                            }
-                        ],
-                        "lld_macro_paths": [
-                            {
-                                "lld_macro": "{#OBD_DESC}",
-                                "path": "$.{#OBD_DESC}"
                             }
                         ],
                         "overrides": [
@@ -523,12 +517,6 @@
                                         "value": "text"
                                     }
                                 ]
-                            }
-                        ],
-                        "lld_macro_paths": [
-                            {
-                                "lld_macro": "{#OBD_DESC}",
-                                "path": "$.{#OBD_DESC}"
                             }
                         ]
                     }
