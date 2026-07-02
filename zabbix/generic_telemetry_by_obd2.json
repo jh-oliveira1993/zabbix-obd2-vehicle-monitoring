@@ -240,7 +240,7 @@
                                     },
                                     {
                                         "uuid": "dd11937ecb9f4ffbaab3442f7db2bd91",
-                                        "expression": "timeleft(/Generic Telemetry by OBD2/obd[{#OBD_KEY}],30m,0,10)<2h and last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])>10",
+                                        "expression": "timeleft(/Generic Telemetry by OBD2/obd[{#OBD_KEY}],30m,10)<2h and last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])>10",
                                         "name": "Predictive: Fuel tank reaching reserve (10%) in less than 2 hours",
                                         "priority": "INFO",
                                         "description": "Calculates the rate of fuel consumption over the last 30 minutes and predicts when it will reach 10%.",
@@ -254,7 +254,7 @@
                                     },
                                     {
                                         "uuid": "d576ed0c6a2f4ee3969ec191d87edf4a",
-                                        "expression": "forecast(/Generic Telemetry by OBD2/obd[{#OBD_KEY}],10m,0,10m)>115",
+                                        "expression": "forecast(/Generic Telemetry by OBD2/obd[{#OBD_KEY}],10m,10m)>115",
                                         "name": "Predictive: Engine Overheating (Temp > 115C) predicted in 10 mins",
                                         "priority": "HIGH",
                                         "description": "Analyzes temperature slope over the last 10 minutes to forecast if it will exceed 115C in the next 10 minutes.",
@@ -268,7 +268,7 @@
                                     },
                                     {
                                         "uuid": "e1464e59200c44c18b9a27eb615cfdaf",
-                                        "expression": "timeleft(/Generic Telemetry by OBD2/obd[{#OBD_KEY}],15m,0,11.0)<30m and last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])<12.5",
+                                        "expression": "timeleft(/Generic Telemetry by OBD2/obd[{#OBD_KEY}],15m,11.0)<30m and last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])<12.5",
                                         "name": "Predictive: Battery drain. Voltage will hit 11.0V in less than 30 mins",
                                         "priority": "WARNING",
                                         "description": "Analyzes voltage drop over the last 15 minutes. Predicts alternator failure or severe battery drain.",
@@ -282,7 +282,7 @@
                                     },
                                     {
                                         "uuid": "077154acb70a490b8140168e62f410ad",
-                                        "expression": "forecast(/Generic Telemetry by OBD2/obd[{#OBD_KEY}],30d,0,30d)>25 or forecast(/Generic Telemetry by OBD2/obd[{#OBD_KEY}],30d,0,30d)<-25",
+                                        "expression": "forecast(/Generic Telemetry by OBD2/obd[{#OBD_KEY}],30d,30d)>25 or forecast(/Generic Telemetry by OBD2/obd[{#OBD_KEY}],30d,30d)<-25",
                                         "name": "Predictive: Long Term Fuel Trim will exceed +-25% in 30 days",
                                         "priority": "WARNING",
                                         "description": "Analyzes the trend of LTFT over a month. Predicts if dirty injectors or a vacuum leak will trigger a Check Engine Light soon.",
@@ -296,7 +296,7 @@
                                     },
                                     {
                                         "uuid": "6591e3e7a2df4bf9a4b7222d3d9307bd",
-                                        "expression": "timeleft(/Generic Telemetry by OBD2/obd[{#OBD_KEY}],7d,0,10000)<30d",
+                                        "expression": "timeleft(/Generic Telemetry by OBD2/obd[{#OBD_KEY}],7d,10000)<30d",
                                         "name": "Predictive: 10,000 km maintenance milestone in less than 30 days",
                                         "priority": "INFO",
                                         "description": "Analyzes driving habits to predict when the car will hit 10,000 km since the last DTC clear (assuming oil change sync).",
