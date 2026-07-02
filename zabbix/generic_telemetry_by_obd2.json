@@ -127,7 +127,7 @@
                                 "history": "180d",
                                 "value_type": "FLOAT",
                                 "units": "{#OBD_UNIT}",
-                                "description": "{#OBD_DESC}",
+                                "description": "{#OBD_NAME}",
                                 "tags": [
                                     {
                                         "tag": "component",
@@ -683,7 +683,7 @@
                                 "delay": "0",
                                 "value_type": "CHAR",
                                 "trends": "0",
-                                "description": "{#OBD_DESC}",
+                                "description": "{#OBD_NAME}",
                                 "tags": [
                                     {
                                         "tag": "component",
