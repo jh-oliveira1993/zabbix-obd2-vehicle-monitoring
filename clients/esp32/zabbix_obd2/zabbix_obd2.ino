@@ -41,6 +41,7 @@ struct PIDDef {
 
 // Known Numeric PIDs with standard SAE formulas
 const PIDDef KNOWN_PIDS[] = {
+  {0x03, "fuel_status", "Fuel System Status", ""},
   {0x04, "engine_load", "Engine Load", "%"},
   {0x05, "coolant_temp", "Engine Coolant Temp", "C"},
   {0x06, "short_fuel_trim_1", "Short Term Fuel Trim 1", "%"},
@@ -55,8 +56,11 @@ const PIDDef KNOWN_PIDS[] = {
   {0x14, "o2_b1s1", "O2 Sensor B1S1 Voltage", "V"},
   {0x15, "o2_b1s2", "O2 Sensor B1S2 Voltage", "V"},
   {0x1F, "run_time", "Engine Run Time", "s"},
+  {0x21, "distance_w_mil", "Distance w/ MIL", "km"},
   {0x2C, "commanded_egr", "Commanded EGR", "%"},
+  {0x2E, "evaporative_purge", "Evaporative Purge", "%"},
   {0x2F, "fuel_level", "Fuel Level", "%"},
+  {0x30, "warmups_since_dtc_clear", "Warm-ups Since DTC Clear", ""},
   {0x31, "distance_since_dtc_clear", "Distance Since DTCs Cleared", "km"},
   {0x33, "barometric_pressure", "Barometric Pressure", "kPa"},
   {0x3C, "catalyst_temp_b1s1", "Catalyst Temp B1S1", "C"},
@@ -69,12 +73,13 @@ const PIDDef KNOWN_PIDS[] = {
   {0x49, "accelerator_pos_d", "Accelerator Pedal Pos D", "%"},
   {0x4A, "accelerator_pos_e", "Accelerator Pedal Pos E", "%"},
   {0x4C, "throttle_actuator", "Commanded Throttle Actuator", "%"},
+  {0x50, "max_maf", "Max MAF Rate", "g/s"},
   {0x52, "ethanol_percent", "Ethanol Percent", "%"},
   {0x5C, "oil_temp", "Engine Oil Temp", "C"}
 };
 const int NUM_KNOWN_PIDS = sizeof(KNOWN_PIDS)/sizeof(PIDDef);
 
-PIDDef activePIDs[30];
+PIDDef activePIDs[40];
 int numActivePIDs = 0;
 bool isDiscoveryDone = false;
 
@@ -301,7 +306,7 @@ void discoverPIDs() {
     if (supported[KNOWN_PIDS[i].pid]) {
       activePIDs[numActivePIDs] = KNOWN_PIDS[i];
       numActivePIDs++;
-      if (numActivePIDs >= 30) break; // Array limit
+      if (numActivePIDs >= 40) break; // Array limit
     }
   }
   
@@ -377,6 +382,7 @@ float queryAndParsePID(byte pid) {
     if (resp.length() >= idx + 12) D = strtol(resp.substring(idx + 10, idx + 12).c_str(), NULL, 16);
     
     switch(pid) {
+      case 0x03: return A; // Fuel System Status
       case 0x04: return (A * 100.0) / 255.0; // Engine Load
       case 0x05: return A - 40; // Coolant Temp
       case 0x06: return ((A - 128) * 100.0) / 128.0; // Short Fuel Trim
@@ -391,8 +397,11 @@ float queryAndParsePID(byte pid) {
       case 0x14: return A / 200.0; // O2 B1S1 Voltage
       case 0x15: return A / 200.0; // O2 B1S2 Voltage
       case 0x1F: return (A * 256.0) + B; // Run Time
+      case 0x21: return (A * 256.0) + B; // Distance w/ MIL
       case 0x2C: return (A * 100.0) / 255.0; // Commanded EGR
+      case 0x2E: return (A * 100.0) / 255.0; // Evaporative Purge
       case 0x2F: return (A * 100.0) / 255.0; // Fuel Level
+      case 0x30: return A; // Warm-ups since DTC clear
       case 0x31: return (A * 256.0) + B; // Distance Since Cleared
       case 0x33: return A; // Barometric Pressure
       case 0x3C: return (((A * 256.0) + B) / 10.0) - 40.0; // Catalyst Temp B1S1
@@ -405,6 +414,7 @@ float queryAndParsePID(byte pid) {
       case 0x49: return (A * 100.0) / 255.0; // Accelerator Pedal Pos D
       case 0x4A: return (A * 100.0) / 255.0; // Accelerator Pedal Pos E
       case 0x4C: return (A * 100.0) / 255.0; // Commanded Throttle Actuator
+      case 0x50: return A * 10.0; // Max MAF Rate
       case 0x52: return (A * 100.0) / 255.0; // Ethanol Percent
       case 0x5C: return A - 40; // Oil Temp
       default: return -999.0;
