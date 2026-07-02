@@ -314,7 +314,7 @@
                         "graph_prototypes": [
                             {
                                 "uuid": "06f9b02fe587410c885dab85f3599ffb",
-                                "name": "OBD2: {#OBD_NAME}",
+                                "name": "OBD2: {#OBD_NAME} [{#OBD_KEY}]",
                                 "graph_items": [
                                     {
                                         "drawtype": "BOLD_LINE",
