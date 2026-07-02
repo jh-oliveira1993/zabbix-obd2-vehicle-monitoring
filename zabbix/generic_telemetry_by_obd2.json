@@ -244,7 +244,7 @@
                                         "name": "Predictive: Fuel tank reaching reserve (10%) in less than 2 hours",
                                         "priority": "INFO",
                                         "description": "Calculates the rate of fuel consumption over the last 30 minutes and predicts when it will reach 10%.",
-                                        "status": "1",
+                                        "status": "DISABLED",
                                         "tags": [
                                             {
                                                 "tag": "scope",
@@ -258,7 +258,7 @@
                                         "name": "Predictive: Engine Overheating (Temp > 115C) predicted in 10 mins",
                                         "priority": "HIGH",
                                         "description": "Analyzes temperature slope over the last 10 minutes to forecast if it will exceed 115C in the next 10 minutes.",
-                                        "status": "1",
+                                        "status": "DISABLED",
                                         "tags": [
                                             {
                                                 "tag": "scope",
@@ -272,7 +272,7 @@
                                         "name": "Predictive: Battery drain. Voltage will hit 11.0V in less than 30 mins",
                                         "priority": "WARNING",
                                         "description": "Analyzes voltage drop over the last 15 minutes. Predicts alternator failure or severe battery drain.",
-                                        "status": "1",
+                                        "status": "DISABLED",
                                         "tags": [
                                             {
                                                 "tag": "scope",
@@ -286,7 +286,7 @@
                                         "name": "Predictive: Long Term Fuel Trim will exceed +-25% in 30 days",
                                         "priority": "WARNING",
                                         "description": "Analyzes the trend of LTFT over a month. Predicts if dirty injectors or a vacuum leak will trigger a Check Engine Light soon.",
-                                        "status": "1",
+                                        "status": "DISABLED",
                                         "tags": [
                                             {
                                                 "tag": "scope",
@@ -300,7 +300,7 @@
                                         "name": "Predictive: 10,000 km maintenance milestone in less than 30 days",
                                         "priority": "INFO",
                                         "description": "Analyzes driving habits to predict when the car will hit 10,000 km since the last DTC clear (assuming oil change sync).",
-                                        "status": "1",
+                                        "status": "DISABLED",
                                         "tags": [
                                             {
                                                 "tag": "scope",
