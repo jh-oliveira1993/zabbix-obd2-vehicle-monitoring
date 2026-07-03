@@ -51,8 +51,6 @@ A dedicated, headless hardware solution. The ESP32 connects directly to the ELM3
 ```text
 zabbix-obd2-vehicle-monitoring/
 ├── README.md
-├── docs/
-│   └── architecture.md       # High-level architecture and hardware details
 ├── zabbix/
 │   └── generic_telemetry_by_obd2.json # Universal Zabbix 7.0 template
 └── clients/
