@@ -116,7 +116,7 @@ python3 telemetry.py
 #### ESP32 Visual Feedback (Built-in LED)
 The firmware uses FreeRTOS to provide non-blocking visual feedback via the built-in LED (GPIO 2):
 - **Fast Continuous Blink (250ms):** Searching for Wi-Fi.
-- **Strobe (5 ultra-fast blinks every 2s):** Wi-Fi connected, but searching for the ELM327 Bluetooth.
+- **Strobe (3 ultra-fast blinks every 2s):** Wi-Fi connected, but searching for the ELM327 Bluetooth.
 - **Solid ON:** Fully connected to both Wi-Fi and the vehicle.
 - **Brief OFF Blink:** Data successfully transmitted to Zabbix.
 
