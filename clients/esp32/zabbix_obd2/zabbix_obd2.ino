@@ -7,16 +7,7 @@
 // Built-in LED Pin (Usually GPIO 2 on generic ESP32 boards)
 #define LED_PIN 2
 
-const char* WIFI_SSID = "YOUR_WIFI_SSID";
-const char* WIFI_PASS = "YOUR_WIFI_PASSWORD";
-
-const char* ZABBIX_SERVER = "YOUR_ZABBIX_IP_OR_DNS"; // Zabbix Server IP/DNS
-const int ZABBIX_PORT = 10051;
-const char* ZABBIX_HOST = "YOUR_ZABBIX_HOSTNAME";      // Hostname configured in Zabbix
-
-// Hardcode the MAC address of your ELM327 adapter
-uint8_t ELM327_MAC_BYTES[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-const char* ELM327_PIN = "1234";
+#include "secrets.h"
 
 // ==========================================
 // GLOBAL VARIABLES
@@ -167,6 +158,7 @@ void loop() {
     // Polling Phase
     if (numActivePIDs > 0) {
       String batchPayload = "{\"request\":\"sender data\",\"data\":[";
+      batchPayload.reserve(4096);
       bool firstItem = true;
       int successfulReads = 0;
       
@@ -276,14 +268,26 @@ void discoverPIDs() {
     char prefix[5];
     sprintf(prefix, "41%02X", base);
     
-    int idx = resp.indexOf(prefix);
-    if (idx != -1 && resp.length() >= idx + 12) {
-      String hexMask = resp.substring(idx + 4, idx + 12); // 8 hex chars = 32 bits
-      Serial.print("Bitmask hex: "); Serial.println(hexMask);
-      uint32_t bitmask = strtoul(hexMask.c_str(), NULL, 16);
+    int idx = 0;
+    uint32_t combinedBitmask = 0;
+    bool foundAny = false;
+    
+    // Find all occurrences of the response prefix (to handle multiple ECUs)
+    while ((idx = resp.indexOf(prefix, idx)) != -1) {
+      if (resp.length() >= idx + 12) {
+        String hexMask = resp.substring(idx + 4, idx + 12);
+        uint32_t bitmask = strtoul(hexMask.c_str(), NULL, 16);
+        combinedBitmask |= bitmask;
+        foundAny = true;
+      }
+      idx += 12; // Advance to find next ECU response
+    }
+    
+    if (foundAny) {
+      Serial.printf("Combined Bitmask hex: %08X\n", combinedBitmask);
       
       for (int i = 1; i <= 32; i++) {
-        if (isPidSupported(bitmask, i)) {
+        if (isPidSupported(combinedBitmask, i)) {
           int pid = base + i;
           if (pid < 256) supported[pid] = true;
           Serial.printf("Supported PID: %02X\n", pid);
@@ -291,7 +295,7 @@ void discoverPIDs() {
       }
       
       // If the last PID in this group (e.g. 0x20) is not supported, stop polling further
-      if (!isPidSupported(bitmask, 32)) {
+      if (!isPidSupported(combinedBitmask, 32)) {
         break;
       }
     } else {
@@ -316,7 +320,9 @@ void discoverPIDs() {
 void sendZabbixLLD() {
   if (numActivePIDs == 0) return;
   
-  String lldValue = "{\"data\":[";
+  String lldValue;
+  lldValue.reserve(4096);
+  lldValue = "{\"data\":[";
   bool first = true;
   for (int i = 0; i < numActivePIDs; i++) {
     if (!first) lldValue += ",";
@@ -331,7 +337,9 @@ void sendZabbixLLD() {
   // Escape quotes in lldValue for inclusion in outer JSON
   lldValue.replace("\"", "\\\"");
   
-  String batchPayload = "{\"request\":\"sender data\",\"data\":[{\"host\":\"" + String(ZABBIX_HOST) + "\",\"key\":\"obd.discovery\",\"value\":\"" + lldValue + "\"}]}";
+  String batchPayload;
+  batchPayload.reserve(4096);
+  batchPayload = "{\"request\":\"sender data\",\"data\":[{\"host\":\"" + String(ZABBIX_HOST) + "\",\"key\":\"obd.discovery\",\"value\":\"" + lldValue + "\"}]}";
   
   Serial.println("Sending LLD Discovery to Zabbix...");
   sendZabbixBatch(batchPayload);
@@ -351,13 +359,48 @@ void sendZabbixBatch(String payloadJson) {
   };
 
   client.write(header, 13);
-  client.print(payloadJson);
+  
+  // Enviar o JSON em pedaços para evitar estourar o buffer do LWIP (TCP Fragmentation)
+  int bytesSent = 0;
+  int totalBytes = payloadJson.length();
+  const char* payloadPtr = payloadJson.c_str();
+  
+  Serial.printf("Sending %d bytes...\n", totalBytes);
+  
+  // Desabilitar o algoritmo de Nagle para forçar o envio imediato de cada chunk
+  // Isso previne "TCP MTU Black Holes" na rede 4G do celular, onde pacotes maiores
+  // que o MTU da rede móvel (~1420 bytes) são descartados silenciosamente.
+  client.setNoDelay(true);
+  
+  while(bytesSent < totalBytes) {
+    if (!client.connected()) {
+      Serial.println("[ERROR] Connection dropped mid-send!");
+      break;
+    }
+    int chunk = totalBytes - bytesSent;
+    if (chunk > 256) chunk = 256;
+    int written = client.write((const uint8_t*)(payloadPtr + bytesSent), chunk);
+    if (written > 0) {
+      client.flush(); // Forçar o envio imediato e aguardar ACK
+      bytesSent += written;
+    } else {
+      delay(10); // Esperar o buffer liberar
+    }
+  }
+  Serial.printf("Sent %d / %d bytes.\n", bytesSent, totalBytes);
   
   Serial.print("-> Zabbix: ");
-  long timeout = millis() + 2000;
-  while((client.connected() || client.available()) && millis() < timeout) {
+  long timeout = millis() + 3000;
+  bool responsePrinted = false;
+  while(millis() < timeout) {
     if(client.available()) {
       Serial.write(client.read());
+      responsePrinted = true;
+    } else if (!client.connected() && responsePrinted) {
+      break; // connection closed and we read the data
+    } else if (!client.connected() && !responsePrinted && (millis() + 100 > timeout)) {
+      // connection closed and no data yet, wait a tiny bit just in case it's in the buffer
+      break;
     }
   }
   Serial.println("");

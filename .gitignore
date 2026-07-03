@@ -13,3 +13,4 @@ venv/
 # OS
 .DS_Store
 Thumbs.db
+clients/esp32/zabbix_obd2/secrets.h

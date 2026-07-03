@@ -75,6 +75,28 @@
                         "params": "(last(//obd[intake_pressure]) * last(//obd[rpm]) * ({$OBD.ENGINE.DISPLACEMENT} * {$OBD.ENGINE.VE} * 3825)) / (25660.2 * (last(//obd[intake_temp]) + 273.15) * (14.7 - 5.7 * last(//obd[ethanol_percent]) / 100) * (last(//obd[commanded_equiv_ratio]) + 0.001))"
                     },
                     {
+                        "uuid": "37375ceb90054bc5b9f514aea4ca90d5",
+                        "name": "Instantaneous Fuel Economy (Fallback)",
+                        "type": "CALCULATED",
+                        "key": "obd.calculated[fuel_economy_kml_fallback]",
+                        "delay": "10s",
+                        "history": "180d",
+                        "value_type": "FLOAT",
+                        "units": "km/L",
+                        "params": "last(//obd[speed]) / (((last(//obd[intake_pressure]) * last(//obd[rpm]) * ({$OBD.ENGINE.DISPLACEMENT} * {$OBD.ENGINE.VE} * 3825)) / (25660.2 * (last(//obd[intake_temp]) + 273.15) * (14.7 - 5.7 * {$OBD.FUEL.ETHANOL_PERCENT} / 100) * (last(//obd[commanded_equiv_ratio]) + 0.001))) + 0.001)"
+                    },
+                    {
+                        "uuid": "2083b1090aa84fedba89497166214332",
+                        "name": "Fuel Consumption Rate (Fallback)",
+                        "type": "CALCULATED",
+                        "key": "obd.calculated[fuel_flow_lh_fallback]",
+                        "delay": "10s",
+                        "history": "180d",
+                        "value_type": "FLOAT",
+                        "units": "L/h",
+                        "params": "(last(//obd[intake_pressure]) * last(//obd[rpm]) * ({$OBD.ENGINE.DISPLACEMENT} * {$OBD.ENGINE.VE} * 3825)) / (25660.2 * (last(//obd[intake_temp]) + 273.15) * (14.7 - 5.7 * {$OBD.FUEL.ETHANOL_PERCENT} / 100) * (last(//obd[commanded_equiv_ratio]) + 0.001))"
+                    },
+                    {
                         "uuid": "6bb07eecc1444e91b29e65c1a1d40e06",
                         "name": "Intake Manifold Vacuum",
                         "type": "CALCULATED",
@@ -116,6 +138,7 @@
                         "key": "obd.discovery",
                         "delay": "0",
                         "lifetime": "30d",
+                        "enabled_lifetime_type": "DISABLE_NEVER",
                         "description": "Automatically discovers all OBD2 PIDs supported by the ECU.\n\nThe telemetry.py script sends the discovery payload upon connection and every hour.\n\nAvailable macros:\n  {#OBD_KEY}  \u2014 key suffix (e.g. rpm, speed, coolant_temp)\n  {#OBD_NAME} \u2014 readable name (e.g. Engine RPM)\n  {#OBD_UNIT} \u2014 measurement unit (e.g. rpm, km/h, \u00b0C)",
                         "item_prototypes": [
                             {
@@ -239,26 +262,12 @@
                                         ]
                                     },
                                     {
-                                        "uuid": "dd11937ecb9f4ffbaab3442f7db2bd91",
-                                        "expression": "timeleft(/Generic Telemetry by OBD2/obd[{#OBD_KEY}],30m,10)<2h and last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])>10",
-                                        "name": "Predictive: Fuel tank reaching reserve (10%) in less than 2 hours",
+                                        "uuid": "6591e3e7a2df4bf9a4b7222d3d9307bd",
+                                        "expression": "timeleft(/Generic Telemetry by OBD2/obd[{#OBD_KEY}],7d,10000)<30d",
+                                        "name": "Predictive: 10,000 km maintenance milestone in less than 30 days",
+                                        "status": "DISABLED",
                                         "priority": "INFO",
-                                        "description": "Calculates the rate of fuel consumption over the last 30 minutes and predicts when it will reach 10%.",
-                                        "status": "DISABLED",
-                                        "tags": [
-                                            {
-                                                "tag": "scope",
-                                                "value": "predictive"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "uuid": "d576ed0c6a2f4ee3969ec191d87edf4a",
-                                        "expression": "forecast(/Generic Telemetry by OBD2/obd[{#OBD_KEY}],10m,10m)>115",
-                                        "name": "Predictive: Engine Overheating (Temp > 115C) predicted in 10 mins",
-                                        "priority": "HIGH",
-                                        "description": "Analyzes temperature slope over the last 10 minutes to forecast if it will exceed 115C in the next 10 minutes.",
-                                        "status": "DISABLED",
+                                        "description": "Analyzes driving habits to predict when the car will hit 10,000 km since the last DTC clear (assuming oil change sync).",
                                         "tags": [
                                             {
                                                 "tag": "scope",
@@ -270,9 +279,37 @@
                                         "uuid": "e1464e59200c44c18b9a27eb615cfdaf",
                                         "expression": "timeleft(/Generic Telemetry by OBD2/obd[{#OBD_KEY}],15m,11.0)<30m and last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])<12.5",
                                         "name": "Predictive: Battery drain. Voltage will hit 11.0V in less than 30 mins",
+                                        "status": "DISABLED",
                                         "priority": "WARNING",
                                         "description": "Analyzes voltage drop over the last 15 minutes. Predicts alternator failure or severe battery drain.",
+                                        "tags": [
+                                            {
+                                                "tag": "scope",
+                                                "value": "predictive"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "uuid": "d576ed0c6a2f4ee3969ec191d87edf4a",
+                                        "expression": "forecast(/Generic Telemetry by OBD2/obd[{#OBD_KEY}],10m,10m)>115",
+                                        "name": "Predictive: Engine Overheating (Temp > 115C) predicted in 10 mins",
                                         "status": "DISABLED",
+                                        "priority": "HIGH",
+                                        "description": "Analyzes temperature slope over the last 10 minutes to forecast if it will exceed 115C in the next 10 minutes.",
+                                        "tags": [
+                                            {
+                                                "tag": "scope",
+                                                "value": "predictive"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "uuid": "dd11937ecb9f4ffbaab3442f7db2bd91",
+                                        "expression": "timeleft(/Generic Telemetry by OBD2/obd[{#OBD_KEY}],30m,10)<2h and last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])>10",
+                                        "name": "Predictive: Fuel tank reaching reserve (10%) in less than 2 hours",
+                                        "status": "DISABLED",
+                                        "priority": "INFO",
+                                        "description": "Calculates the rate of fuel consumption over the last 30 minutes and predicts when it will reach 10%.",
                                         "tags": [
                                             {
                                                 "tag": "scope",
@@ -284,23 +321,9 @@
                                         "uuid": "077154acb70a490b8140168e62f410ad",
                                         "expression": "forecast(/Generic Telemetry by OBD2/obd[{#OBD_KEY}],30d,30d)>25 or forecast(/Generic Telemetry by OBD2/obd[{#OBD_KEY}],30d,30d)<-25",
                                         "name": "Predictive: Long Term Fuel Trim will exceed +-25% in 30 days",
+                                        "status": "DISABLED",
                                         "priority": "WARNING",
                                         "description": "Analyzes the trend of LTFT over a month. Predicts if dirty injectors or a vacuum leak will trigger a Check Engine Light soon.",
-                                        "status": "DISABLED",
-                                        "tags": [
-                                            {
-                                                "tag": "scope",
-                                                "value": "predictive"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "uuid": "6591e3e7a2df4bf9a4b7222d3d9307bd",
-                                        "expression": "timeleft(/Generic Telemetry by OBD2/obd[{#OBD_KEY}],7d,10000)<30d",
-                                        "name": "Predictive: 10,000 km maintenance milestone in less than 30 days",
-                                        "priority": "INFO",
-                                        "description": "Analyzes driving habits to predict when the car will hit 10,000 km since the last DTC clear (assuming oil change sync).",
-                                        "status": "DISABLED",
                                         "tags": [
                                             {
                                                 "tag": "scope",
@@ -584,7 +607,6 @@
                                         {
                                             "macro": "{#OBD_KEY}",
                                             "value": "^coolant_temp$|^oil_temp$",
-                                            "operator": "MATCHES_REGEX",
                                             "formulaid": "A"
                                         }
                                     ]
@@ -673,6 +695,7 @@
                         "key": "obd.discovery.text",
                         "delay": "0",
                         "lifetime": "30d",
+                        "enabled_lifetime_type": "DISABLE_NEVER",
                         "description": "Discovers OBD2 PIDs that return text values (VIN, CALIBRATION_ID, CVN, FUEL_STATUS, OBD_COMPLIANCE).\n\nMacros:\n  {#OBD_KEY}  - key suffix (e.g. vin, calibration_id)\n  {#OBD_NAME} - readable name (e.g. VIN)",
                         "item_prototypes": [
                             {
@@ -752,6 +775,11 @@
                         "macro": "{$OBD.VOLTAGE.LOW.RECOVERY}",
                         "value": "12",
                         "description": "Recovery voltage for control module (V)"
+                    },
+                    {
+                        "macro": "{$OBD.FUEL.ETHANOL_PERCENT}",
+                        "value": "27",
+                        "description": "Fallback ethanol percentage for calculated fuel consumption when sensor is missing"
                     }
                 ]
             }
