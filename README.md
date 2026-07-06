@@ -128,6 +128,17 @@ The firmware uses FreeRTOS to provide non-blocking visual feedback via the built
 - **Solid ON:** Fully connected to both Wi-Fi and the vehicle.
 - **Brief OFF Blink:** Data successfully transmitted to Zabbix.
 
+#### ESP32 Mobile Data Usage
+When using a smartphone hotspot as the network transport, data consumption is minimal. Based on a 30-PID telemetry payload (~2KB) sent at 1Hz plus TCP/IP overhead:
+
+| Period | Estimated Consumption |
+|---|---|
+| Per hour of vehicle use | ~10 MB |
+| Per month (1h/day, 22 working days) | ~220 MB |
+| Per month (1h/day, 30 days) | ~300 MB |
+
+Any standard mobile data plan handles this comfortably without noticeable impact on the data allowance.
+
 ### 4. Grafana Dashboard (Optional)
 1. In Grafana, go to **Dashboards** -> **Import**.
 2. Upload `grafana/OBD2-Vehicle-Telemetry.json`.
