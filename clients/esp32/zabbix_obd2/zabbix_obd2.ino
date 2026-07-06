@@ -25,6 +25,11 @@ unsigned long lastMonitorTime   = 0;
 const unsigned long DISCOVERY_INTERVAL = 3600000; // 1 hour in ms
 const unsigned long MONITOR_INTERVAL   = 10000;   // 10 seconds in ms
 
+// Application-level telemetry counters (reset only on hardware reboot)
+uint32_t obd2FailedReads    = 0; // PID reads that returned no valid data
+uint32_t obd2ReconnectCount = 0; // Total BT + Wi-Fi reconnection attempts since boot
+uint32_t zabbixSendErrors   = 0; // Failed TCP connections to Zabbix server
+
 struct PIDDef {
   byte pid;
   String suffix;
@@ -185,6 +190,8 @@ void loop() {
           firstItem = false;
           successfulReads++;
           Serial.printf("%-20s = %.2f %s\n", activePIDs[i].name.c_str(), value, activePIDs[i].unit.c_str());
+        } else {
+          obd2FailedReads++; // Count invalid / no-response PID reads
         }
       }
       batchPayload += "]}";
@@ -203,6 +210,7 @@ void loop() {
     
     if (WiFi.status() != WL_CONNECTED) {
       appState = 0;
+      obd2ReconnectCount++;
       Serial.print("-> Reconnecting Wi-Fi...");
       WiFi.disconnect();
       WiFi.begin(WIFI_SSID, WIFI_PASS);
@@ -217,6 +225,7 @@ void loop() {
     
     if (WiFi.status() == WL_CONNECTED && !SerialBT.connected()) {
       appState = 1;
+      obd2ReconnectCount++;
       Serial.println("-> Reconnecting Bluetooth to ELM327...");
       bool connected = SerialBT.connect(ELM327_MAC_BYTES);
       if(connected) {
@@ -366,43 +375,84 @@ void sendZabbixLLD() {
 void collectAndSendMonitorMetrics() {
   Serial.println("[MONITOR] Collecting ESP32 self-monitoring metrics...");
 
-  uint32_t heapFree    = ESP.getFreeHeap();
-  uint32_t heapTotal   = ESP.getHeapSize();
-  uint32_t heapMinFree = ESP.getMinFreeHeap();
+  // --- Hardware metrics ---
+  uint32_t heapFree     = ESP.getFreeHeap();
+  uint32_t heapTotal    = ESP.getHeapSize();
+  uint32_t heapMinFree  = ESP.getMinFreeHeap();
   uint32_t heapMaxAlloc = ESP.getMaxAllocHeap();
-  float    heapUsedPct = 100.0 * (1.0 - ((float)heapFree / (float)heapTotal));
-  int32_t  rssi        = WiFi.RSSI();
-  int32_t  channel     = WiFi.channel();
-  uint32_t uptime      = millis() / 1000;
-  uint32_t cpuFreq     = ESP.getCpuFreqMHz();
-  uint32_t taskCount   = uxTaskGetNumberOfTasks();
-  float    chipTemp    = temperatureRead();
-  int      resetReason = (int)esp_reset_reason();
+  float    heapUsedPct  = 100.0 * (1.0 - ((float)heapFree / (float)heapTotal));
+  int32_t  rssi         = WiFi.RSSI();
+  int32_t  channel      = WiFi.channel();
+  uint32_t uptime       = millis() / 1000;
+  uint32_t cpuFreq      = ESP.getCpuFreqMHz();
+  uint32_t taskCount    = uxTaskGetNumberOfTasks();
+  float    chipTemp     = temperatureRead();
+  int      resetReason  = (int)esp_reset_reason();
 
-  Serial.printf("  Heap Free:     %u bytes (%.1f%% used)\n", heapFree, heapUsedPct);
-  Serial.printf("  Heap Min Free: %u bytes\n", heapMinFree);
-  Serial.printf("  Wi-Fi RSSI:    %d dBm  (Ch %d)\n", rssi, channel);
-  Serial.printf("  Uptime:        %u s\n", uptime);
-  Serial.printf("  CPU Freq:      %u MHz\n", cpuFreq);
+  // --- Flash metrics ---
+  uint32_t flashTotal      = ESP.getFlashChipSize();
+  uint32_t sketchSize      = ESP.getSketchSize();
+  uint32_t sketchFreeSpace = ESP.getFreeSketchSpace();
+
+  // --- PSRAM metrics (0 if not available) ---
+  uint32_t psramTotal = ESP.getPsramSize();
+  uint32_t psramFree  = ESP.getFreePsram();
+
+  // --- Application metrics ---
+  uint8_t  btConnected = SerialBT.connected() ? 1 : 0;
+
+  Serial.printf("  Heap Free:      %u bytes (%.1f%% used)\n", heapFree, heapUsedPct);
+  Serial.printf("  Heap Min Free:  %u bytes\n", heapMinFree);
+  Serial.printf("  Wi-Fi RSSI:     %d dBm  (Ch %d)\n", rssi, channel);
+  Serial.printf("  Uptime:         %u s\n", uptime);
+  Serial.printf("  CPU Freq:       %u MHz\n", cpuFreq);
   Serial.printf("  FreeRTOS Tasks: %u\n", taskCount);
-  Serial.printf("  Chip Temp:     %.1f C\n", chipTemp);
+  Serial.printf("  Chip Temp:      %.1f C\n", chipTemp);
+  Serial.printf("  Flash Total:    %u bytes | Sketch: %u | Free: %u\n", flashTotal, sketchSize, sketchFreeSpace);
+  Serial.printf("  PSRAM:          total=%u free=%u\n", psramTotal, psramFree);
+  Serial.printf("  BT Connected:   %u | Active PIDs: %d\n", btConnected, numActivePIDs);
+  Serial.printf("  Failed Reads:   %u | Reconnects: %u | Zabbix Errors: %u\n",
+                obd2FailedReads, obd2ReconnectCount, zabbixSendErrors);
 
   String h = String(ZABBIX_MONITOR_HOST);
   String payload;
-  payload.reserve(1024);
+  payload.reserve(2048);
   payload  = "{\"request\":\"sender data\",\"data\":[";
-  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.heap.free\",\"value\":\""       + String(heapFree)     + "\"},";
-  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.heap.total\",\"value\":\""      + String(heapTotal)    + "\"},";
-  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.heap.min_free\",\"value\":\""  + String(heapMinFree)  + "\"},";
-  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.heap.max_alloc\",\"value\":\"" + String(heapMaxAlloc) + "\"},";
-  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.heap.used_pct\",\"value\":\""  + String(heapUsedPct, 1) + "\"},";
-  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.wifi.rssi\",\"value\":\""      + String(rssi)         + "\"},";
-  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.wifi.channel\",\"value\":\""   + String(channel)      + "\"},";
-  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.uptime\",\"value\":\""          + String(uptime)       + "\"},";
-  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.cpu.freq\",\"value\":\""        + String(cpuFreq)      + "\"},";
-  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.tasks\",\"value\":\""           + String(taskCount)    + "\"},";
-  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.chip.temp\",\"value\":\""      + String(chipTemp, 1)  + "\"},";
-  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.reset_reason\",\"value\":\""   + String(resetReason)  + "\"}";
+
+  // Heap
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.heap.free\",\"value\":\""        + String(heapFree)        + "\"},";
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.heap.total\",\"value\":\""       + String(heapTotal)       + "\"},";
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.heap.min_free\",\"value\":\""   + String(heapMinFree)     + "\"},";
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.heap.max_alloc\",\"value\":\""  + String(heapMaxAlloc)    + "\"},";
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.heap.used_pct\",\"value\":\""   + String(heapUsedPct, 1)  + "\"},";
+
+  // Wi-Fi
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.wifi.rssi\",\"value\":\""       + String(rssi)            + "\"},";
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.wifi.channel\",\"value\":\""    + String(channel)         + "\"},";
+
+  // System
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.uptime\",\"value\":\""           + String(uptime)          + "\"},";
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.cpu.freq\",\"value\":\""         + String(cpuFreq)         + "\"},";
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.tasks\",\"value\":\""            + String(taskCount)       + "\"},";
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.chip.temp\",\"value\":\""       + String(chipTemp, 1)     + "\"},";
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.reset_reason\",\"value\":\""    + String(resetReason)     + "\"},";
+
+  // Flash
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.flash.total\",\"value\":\""     + String(flashTotal)      + "\"},";
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.flash.sketch_size\",\"value\":\"" + String(sketchSize)    + "\"},";
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.flash.free_space\",\"value\":\"" + String(sketchFreeSpace) + "\"},";
+
+  // PSRAM
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.psram.total\",\"value\":\""     + String(psramTotal)      + "\"},";
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.psram.free\",\"value\":\""      + String(psramFree)       + "\"},";
+
+  // Application
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.obd2.bt_connected\",\"value\":\"" + String(btConnected)     + "\"},";
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.obd2.active_pids\",\"value\":\"" + String(numActivePIDs)   + "\"},";
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.obd2.failed_reads\",\"value\":\"" + String(obd2FailedReads) + "\"},";
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.obd2.reconnects\",\"value\":\""  + String(obd2ReconnectCount) + "\"},";
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.zabbix.send_errors\",\"value\":\"" + String(zabbixSendErrors) + "\"}";
+
   payload += "]}";
 
   sendZabbixBatch(payload, ZABBIX_MONITOR_HOST);
@@ -411,6 +461,7 @@ void collectAndSendMonitorMetrics() {
 void sendZabbixBatch(String payloadJson, const char* host) {
   if (!client.connect(ZABBIX_SERVER, ZABBIX_PORT)) {
     Serial.println("[ERROR] TCP connection to Zabbix failed.");
+    zabbixSendErrors++;
     return;
   }
 

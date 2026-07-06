@@ -345,6 +345,276 @@
                                 ]
                             }
                         ]
+                    },
+                    {
+                        "uuid": "86ba9172a51c49ce8ae2b7df3b99ed6e",
+                        "name": "Flash Total Size",
+                        "type": "TRAP",
+                        "key": "esp32.flash.total",
+                        "delay": "0",
+                        "value_type": "UNSIGNED",
+                        "units": "B",
+                        "description": "Total flash chip size on the ESP32 board.",
+                        "tags": [
+                            {
+                                "tag": "component",
+                                "value": "flash"
+                            },
+                            {
+                                "tag": "device",
+                                "value": "esp32"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "7e0266adaa7149538fbc938348a60a21",
+                        "name": "Flash Sketch Size",
+                        "type": "TRAP",
+                        "key": "esp32.flash.sketch_size",
+                        "delay": "0",
+                        "value_type": "UNSIGNED",
+                        "units": "B",
+                        "description": "Size of the currently uploaded firmware sketch in bytes.",
+                        "tags": [
+                            {
+                                "tag": "component",
+                                "value": "flash"
+                            },
+                            {
+                                "tag": "device",
+                                "value": "esp32"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "b1ec58df4a9b47249f2da0b2b58e9247",
+                        "name": "Flash Free Space (OTA)",
+                        "type": "TRAP",
+                        "key": "esp32.flash.free_space",
+                        "delay": "0",
+                        "value_type": "UNSIGNED",
+                        "units": "B",
+                        "description": "Free flash space available for OTA firmware updates.",
+                        "tags": [
+                            {
+                                "tag": "component",
+                                "value": "flash"
+                            },
+                            {
+                                "tag": "device",
+                                "value": "esp32"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "0cb7890374a74bb6b05fdc6704738e6e",
+                                "expression": "last(/ESP32 Self-Monitoring/esp32.flash.free_space)<{$ESP32.FLASH.FREE.MIN}",
+                                "name": "ESP32 free flash space low ({ITEM.LASTVALUE})",
+                                "priority": "WARNING",
+                                "description": "Available flash space for OTA updates dropped below the threshold. A firmware update may not be possible.",
+                                "tags": [
+                                    {
+                                        "tag": "scope",
+                                        "value": "capacity"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "e39b7355826d44ab9a287a2460ebfa05",
+                        "name": "PSRAM Total",
+                        "type": "TRAP",
+                        "key": "esp32.psram.total",
+                        "delay": "0",
+                        "value_type": "UNSIGNED",
+                        "units": "B",
+                        "description": "Total PSRAM size. Returns 0 on boards without PSRAM (e.g. WROOM-32). Non-zero on WROVER variants.",
+                        "tags": [
+                            {
+                                "tag": "component",
+                                "value": "memory"
+                            },
+                            {
+                                "tag": "device",
+                                "value": "esp32"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "11dca90f5ec142c8b3b420687f7d30e3",
+                        "name": "PSRAM Free",
+                        "type": "TRAP",
+                        "key": "esp32.psram.free",
+                        "delay": "0",
+                        "value_type": "UNSIGNED",
+                        "units": "B",
+                        "description": "Free PSRAM available. Returns 0 on boards without PSRAM.",
+                        "tags": [
+                            {
+                                "tag": "component",
+                                "value": "memory"
+                            },
+                            {
+                                "tag": "device",
+                                "value": "esp32"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "9de0d0f880e34a5ab201caf36915501d",
+                        "name": "OBD2 Bluetooth Connected",
+                        "type": "TRAP",
+                        "key": "esp32.obd2.bt_connected",
+                        "delay": "0",
+                        "value_type": "UNSIGNED",
+                        "description": "Indicates whether the ESP32 is currently connected to the ELM327 adapter via Bluetooth.\n1 = Connected, 0 = Disconnected.",
+                        "tags": [
+                            {
+                                "tag": "component",
+                                "value": "obd2"
+                            },
+                            {
+                                "tag": "device",
+                                "value": "esp32"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "148e587869de4bb9a4ccb5a5db22297b",
+                                "expression": "max(/ESP32 Self-Monitoring/esp32.obd2.bt_connected,5m)=0",
+                                "name": "ESP32 OBD2 Bluetooth disconnected for >5 minutes",
+                                "priority": "WARNING",
+                                "description": "The ESP32 has not been connected to the ELM327 adapter for over 5 minutes. No vehicle telemetry is being collected.",
+                                "tags": [
+                                    {
+                                        "tag": "scope",
+                                        "value": "availability"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "71a88e583c0d41a89b316072a76bceab",
+                        "name": "OBD2 Active PIDs",
+                        "type": "TRAP",
+                        "key": "esp32.obd2.active_pids",
+                        "delay": "0",
+                        "value_type": "UNSIGNED",
+                        "description": "Number of OBD2 PIDs currently being actively polled from the ECU. Set to 0 when Bluetooth is disconnected.",
+                        "tags": [
+                            {
+                                "tag": "component",
+                                "value": "obd2"
+                            },
+                            {
+                                "tag": "device",
+                                "value": "esp32"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "7016e318aea0497caef90fe9c153e007",
+                        "name": "OBD2 Failed PID Reads",
+                        "type": "TRAP",
+                        "key": "esp32.obd2.failed_reads",
+                        "delay": "0",
+                        "value_type": "UNSIGNED",
+                        "description": "Cumulative count of PID queries that returned no valid data since last reboot. A steadily increasing value may indicate ECU communication issues.",
+                        "tags": [
+                            {
+                                "tag": "component",
+                                "value": "obd2"
+                            },
+                            {
+                                "tag": "device",
+                                "value": "esp32"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "b4d2bf63085248d39f82764b6d0bd9e5",
+                                "expression": "change(/ESP32 Self-Monitoring/esp32.obd2.failed_reads)>{$ESP32.OBD2.FAILED.RATE}",
+                                "name": "ESP32 OBD2 PID read failures increasing rapidly",
+                                "priority": "WARNING",
+                                "description": "The rate of failed PID reads increased by more than the threshold in a single interval. Possible ECU or adapter communication issue.",
+                                "tags": [
+                                    {
+                                        "tag": "scope",
+                                        "value": "availability"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "4d6c4c3386754d00890dc9de62895a0d",
+                        "name": "Connection Reconnect Count",
+                        "type": "TRAP",
+                        "key": "esp32.obd2.reconnects",
+                        "delay": "0",
+                        "value_type": "UNSIGNED",
+                        "description": "Cumulative number of Wi-Fi and Bluetooth reconnection attempts since last reboot. A high value indicates an unstable connection environment.",
+                        "tags": [
+                            {
+                                "tag": "component",
+                                "value": "network"
+                            },
+                            {
+                                "tag": "device",
+                                "value": "esp32"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "603a0859754a47b38de4c4db15dafc3a",
+                                "expression": "change(/ESP32 Self-Monitoring/esp32.obd2.reconnects)>0 and timeleft(/ESP32 Self-Monitoring/esp32.uptime,1h,0)<3600",
+                                "name": "ESP32 reconnection detected",
+                                "priority": "INFO",
+                                "description": "A Wi-Fi or Bluetooth reconnection occurred. Check esp32.reset_reason if this happens frequently.",
+                                "tags": [
+                                    {
+                                        "tag": "scope",
+                                        "value": "availability"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "b232e118737f47e18c3f3244f05fa3c6",
+                        "name": "Zabbix Send Errors",
+                        "type": "TRAP",
+                        "key": "esp32.zabbix.send_errors",
+                        "delay": "0",
+                        "value_type": "UNSIGNED",
+                        "description": "Cumulative number of failed TCP connection attempts to the Zabbix server since last reboot. A non-zero value indicates network or server availability issues.",
+                        "tags": [
+                            {
+                                "tag": "component",
+                                "value": "zabbix"
+                            },
+                            {
+                                "tag": "device",
+                                "value": "esp32"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "0ecc6a8b6a404fc28816d8ffd7fcae26",
+                                "expression": "change(/ESP32 Self-Monitoring/esp32.zabbix.send_errors)>0",
+                                "name": "ESP32 failed to send data to Zabbix",
+                                "priority": "WARNING",
+                                "description": "At least one TCP connection to the Zabbix server failed. Telemetry data may have been lost.",
+                                "tags": [
+                                    {
+                                        "tag": "scope",
+                                        "value": "availability"
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 ],
                 "macros": [
@@ -367,6 +637,16 @@
                         "macro": "{$ESP32.TEMP.HIGH}",
                         "value": "80",
                         "description": "Chip temperature threshold in °C for WARNING alert (default: 80°C)"
+                    },
+                    {
+                        "macro": "{$ESP32.FLASH.FREE.MIN}",
+                        "value": "524288",
+                        "description": "Minimum acceptable free flash space for OTA in bytes (default: 512 KB)"
+                    },
+                    {
+                        "macro": "{$ESP32.OBD2.FAILED.RATE}",
+                        "value": "10",
+                        "description": "Maximum acceptable increase in failed PID reads per 10s interval before triggering a WARNING"
                     }
                 ]
             }
