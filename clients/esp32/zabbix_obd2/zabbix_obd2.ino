@@ -7,9 +7,6 @@
 // Built-in LED Pin (Usually GPIO 2 on generic ESP32 boards)
 #define LED_PIN 2
 
-// Set to false to disable ESP32 self-monitoring metrics (saves Flash/RAM)
-const bool ENABLE_SELF_MONITORING = true;
-
 #include "secrets.h"
 
 // ==========================================

@@ -118,11 +118,13 @@ python3 telemetry.py
 
 ### 3. ESP32 Collector Installation (Option B)
 1. Open `clients/esp32/zabbix_obd2/zabbix_obd2.ino` in the Arduino IDE.
-2. Edit the **GENERAL SETTINGS** block at the top of the file:
+2. Duplicate the file `secrets_example.h` and rename it to `secrets.h`.
+3. Edit your new `secrets.h` file to configure your environment:
    - Update `WIFI_SSID` and `WIFI_PASS` (must be a 2.4GHz network).
    - Update `ZABBIX_SERVER` and `ZABBIX_HOST` (ensure the host matches your Vehicle Zabbix Hostname exactly).
    - Update `ZABBIX_MONITOR_HOST` (ensure the host matches your ESP32 Hardware Zabbix Hostname exactly).
    - Update `ELM327_MAC_BYTES` with your adapter's MAC address in hex format (e.g., `{0x01, 0x23, 0x45, 0x67, 0x89, 0xBA}`).
+   - Update `ENABLE_SELF_MONITORING` to `false` if you want to completely disable ESP32 hardware telemetry to save Flash/RAM.
 3. Install the **ArduinoJson** library via the Library Manager.
 4. In the Arduino IDE, go to **Tools -> Partition Scheme** and select **Huge APP (3MB No OTA/1MB SPIFFS)**. This is mandatory as both the Wi-Fi and Bluetooth Classic stacks are very large.
 5. Compile and Upload.
