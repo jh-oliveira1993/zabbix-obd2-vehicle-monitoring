@@ -1,92 +1,62 @@
 {
-  "title": "ESP32 Self-Monitoring",
-  "uid": "esp32-self-monitoring",
-  "tags": [
-    "esp32",
-    "iot",
-    "obd2"
-  ],
-  "timezone": "browser",
-  "schemaVersion": 38,
-  "version": 1,
-  "refresh": "10s",
-  "time": {
-    "from": "now-1h",
-    "to": "now"
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
   },
-  "timepicker": {},
+  "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
+  "links": [
+    {
+      "icon": "external link",
+      "targetBlank": false,
+      "title": "OBD2 Vehicle Telemetry",
+      "type": "link",
+      "url": "/d/obd2-vehicle-telemetry"
+    }
+  ],
   "panels": [
     {
-      "id": 1,
-      "type": "row",
-      "title": "Memory (Heap)",
+      "collapsed": false,
       "gridPos": {
-        "x": 0,
-        "y": 0,
+        "h": 1,
         "w": 24,
-        "h": 1
+        "x": 0,
+        "y": 0
       },
-      "collapsed": false
+      "id": 1,
+      "panels": [],
+      "title": "Memory (Heap)",
+      "type": "row"
     },
     {
-      "id": 2,
-      "type": "gauge",
-      "title": "Heap Used",
-      "gridPos": {
-        "x": 0,
-        "y": 1,
-        "w": 6,
-        "h": 8
-      },
       "datasource": {
         "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
-      },
-      "targets": [
-        {
-          "application": {
-            "filter": ""
-          },
-          "datasource": {
-            "type": "alexanderzobnin-zabbix-datasource",
-            "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
-          },
-          "functions": [],
-          "group": {
-            "filter": "ESP32"
-          },
-          "host": {
-            "filter": "$host"
-          },
-          "item": {
-            "filter": "Heap Used"
-          },
-          "refId": "A"
-        }
-      ],
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "orientation": "auto",
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
+        "uid": "ffk089lf2vfuof"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "percent",
-          "min": 0,
+          "mappings": [],
           "max": 100,
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               },
               {
                 "color": "yellow",
@@ -98,68 +68,106 @@
               }
             ]
           },
-          "mappings": []
+          "unit": "percent"
         },
         "overrides": []
-      }
-    },
-    {
-      "id": 3,
-      "type": "gauge",
-      "title": "Heap Free",
+      },
       "gridPos": {
-        "x": 6,
-        "y": 1,
+        "h": 8,
         "w": 6,
-        "h": 8
+        "x": 0,
+        "y": 1
       },
-      "datasource": {
-        "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
+      "id": 2,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
       },
+      "pluginVersion": "12.4.2",
       "targets": [
         {
           "application": {
             "filter": ""
           },
+          "countTriggersBy": "",
           "datasource": {
             "type": "alexanderzobnin-zabbix-datasource",
             "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
           },
+          "evaltype": "0",
           "functions": [],
           "group": {
-            "filter": "ESP32"
+            "filter": "Smartthings"
           },
           "host": {
             "filter": "$host"
           },
           "item": {
-            "filter": "Heap Free"
+            "filter": "Heap Used"
           },
-          "refId": "A"
+          "itemTag": {
+            "filter": ""
+          },
+          "macro": {
+            "filter": ""
+          },
+          "options": {
+            "count": false,
+            "disableDataAlignment": false,
+            "showDisabledItems": false,
+            "skipEmptyValues": false,
+            "useTrends": "default",
+            "useZabbixValueMapping": false
+          },
+          "proxy": {
+            "filter": ""
+          },
+          "queryType": "0",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "table": {
+            "skipEmptyValues": false
+          },
+          "tags": {
+            "filter": ""
+          },
+          "textFilter": "",
+          "trigger": {
+            "filter": ""
+          }
         }
       ],
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "orientation": "auto",
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
+      "title": "Heap Used",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "alexanderzobnin-zabbix-datasource",
+        "uid": "ffk089lf2vfuof"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "bytes",
-          "min": 0,
+          "mappings": [],
           "max": 327680,
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "red",
-                "value": null
+                "value": 0
               },
               {
                 "color": "yellow",
@@ -171,37 +179,47 @@
               }
             ]
           },
-          "mappings": []
+          "unit": "bytes"
         },
         "overrides": []
-      }
-    },
-    {
-      "id": 4,
-      "type": "timeseries",
-      "title": "Heap History (Free / Min Free / Max Alloc)",
+      },
       "gridPos": {
-        "x": 12,
-        "y": 1,
-        "w": 12,
-        "h": 8
+        "h": 8,
+        "w": 6,
+        "x": 6,
+        "y": 1
       },
-      "datasource": {
-        "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
+      "id": 3,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
       },
+      "pluginVersion": "12.4.2",
       "targets": [
         {
           "application": {
             "filter": ""
           },
+          "countTriggersBy": "",
           "datasource": {
             "type": "alexanderzobnin-zabbix-datasource",
             "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
           },
+          "evaltype": "0",
           "functions": [],
           "group": {
-            "filter": "ESP32"
+            "filter": "Smartthings"
           },
           "host": {
             "filter": "$host"
@@ -209,8 +227,177 @@
           "item": {
             "filter": "Heap Free"
           },
+          "itemTag": {
+            "filter": ""
+          },
+          "macro": {
+            "filter": ""
+          },
+          "options": {
+            "count": false,
+            "disableDataAlignment": false,
+            "showDisabledItems": false,
+            "skipEmptyValues": false,
+            "useTrends": "default",
+            "useZabbixValueMapping": false
+          },
+          "proxy": {
+            "filter": ""
+          },
+          "queryType": "0",
           "refId": "A",
-          "legendFormat": "Free"
+          "resultFormat": "time_series",
+          "schema": 12,
+          "table": {
+            "skipEmptyValues": false
+          },
+          "tags": {
+            "filter": ""
+          },
+          "textFilter": "",
+          "trigger": {
+            "filter": ""
+          }
+        }
+      ],
+      "title": "Heap Free",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "alexanderzobnin-zabbix-datasource",
+        "uid": "ffk089lf2vfuof"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 1
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.4.2",
+      "targets": [
+        {
+          "application": {
+            "filter": ""
+          },
+          "countTriggersBy": "",
+          "datasource": {
+            "type": "alexanderzobnin-zabbix-datasource",
+            "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
+          },
+          "evaltype": "0",
+          "functions": [],
+          "group": {
+            "filter": "Smartthings"
+          },
+          "host": {
+            "filter": "$host"
+          },
+          "item": {
+            "filter": "Heap Free"
+          },
+          "itemTag": {
+            "filter": ""
+          },
+          "legendFormat": "Free",
+          "macro": {
+            "filter": ""
+          },
+          "options": {
+            "count": false,
+            "disableDataAlignment": false,
+            "showDisabledItems": false,
+            "skipEmptyValues": false,
+            "useTrends": "default",
+            "useZabbixValueMapping": false
+          },
+          "proxy": {
+            "filter": ""
+          },
+          "queryType": "0",
+          "refId": "A",
+          "schema": 12,
+          "table": {
+            "skipEmptyValues": false
+          },
+          "tags": {
+            "filter": ""
+          },
+          "textFilter": "",
+          "trigger": {
+            "filter": ""
+          }
         },
         {
           "application": {
@@ -230,17 +417,19 @@
           "item": {
             "filter": "Heap Min Free (since boot)"
           },
-          "refId": "B",
-          "legendFormat": "Min Free (since boot)"
+          "legendFormat": "Min Free (since boot)",
+          "refId": "B"
         },
         {
           "application": {
             "filter": ""
           },
+          "countTriggersBy": "",
           "datasource": {
             "type": "alexanderzobnin-zabbix-datasource",
             "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
           },
+          "evaltype": "0",
           "functions": [],
           "group": {
             "filter": "ESP32"
@@ -251,89 +440,59 @@
           "item": {
             "filter": "Heap Max Allocatable Block"
           },
-          "refId": "C",
-          "legendFormat": "Max Alloc Block"
-        }
-      ],
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        },
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom"
-        }
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "bytes",
-          "custom": {
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "spanNulls": false
-          }
-        },
-        "overrides": []
-      }
-    },
-    {
-      "id": 5,
-      "type": "bargauge",
-      "title": "Heap Free (Bar)",
-      "gridPos": {
-        "x": 0,
-        "y": 9,
-        "w": 12,
-        "h": 4
-      },
-      "datasource": {
-        "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
-      },
-      "targets": [
-        {
-          "application": {
+          "itemTag": {
             "filter": ""
           },
-          "datasource": {
-            "type": "alexanderzobnin-zabbix-datasource",
-            "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
+          "legendFormat": "Max Alloc Block",
+          "macro": {
+            "filter": ""
           },
-          "functions": [],
-          "group": {
-            "filter": "ESP32"
+          "options": {
+            "count": false,
+            "disableDataAlignment": false,
+            "showDisabledItems": false,
+            "skipEmptyValues": false,
+            "useTrends": "default",
+            "useZabbixValueMapping": false
           },
-          "host": {
-            "filter": "$host"
+          "proxy": {
+            "filter": ""
           },
-          "item": {
-            "filter": "Heap Free"
+          "queryType": "0",
+          "refId": "C",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "table": {
+            "skipEmptyValues": false
           },
-          "refId": "A"
+          "tags": {
+            "filter": ""
+          },
+          "textFilter": "",
+          "trigger": {
+            "filter": ""
+          }
         }
       ],
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "orientation": "horizontal",
-        "displayMode": "gradient",
-        "showUnfilled": true
+      "title": "Heap History (Free / Min Free / Max Alloc)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "alexanderzobnin-zabbix-datasource",
+        "uid": "ffk089lf2vfuof"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "bytes",
-          "min": 0,
+          "mappings": [],
           "max": 327680,
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               },
               {
                 "color": "yellow",
@@ -344,68 +503,116 @@
                 "value": 278528
               }
             ]
-          }
+          },
+          "unit": "bytes"
         },
         "overrides": []
-      }
-    },
-    {
-      "id": 6,
-      "type": "bargauge",
-      "title": "PSRAM Free (Bar)",
+      },
       "gridPos": {
-        "x": 12,
-        "y": 9,
+        "h": 4,
         "w": 12,
-        "h": 4
+        "x": 0,
+        "y": 9
       },
-      "datasource": {
-        "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
+      "id": 5,
+      "options": {
+        "displayMode": "gradient",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
       },
+      "pluginVersion": "12.4.2",
       "targets": [
         {
           "application": {
             "filter": ""
           },
+          "countTriggersBy": "",
           "datasource": {
             "type": "alexanderzobnin-zabbix-datasource",
             "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
           },
+          "evaltype": "0",
           "functions": [],
           "group": {
-            "filter": "ESP32"
+            "filter": "Smartthings"
           },
           "host": {
             "filter": "$host"
           },
           "item": {
-            "filter": "PSRAM Free"
+            "filter": "Heap Free"
           },
-          "refId": "A"
+          "itemTag": {
+            "filter": ""
+          },
+          "macro": {
+            "filter": ""
+          },
+          "options": {
+            "count": false,
+            "disableDataAlignment": false,
+            "showDisabledItems": false,
+            "skipEmptyValues": false,
+            "useTrends": "default",
+            "useZabbixValueMapping": false
+          },
+          "proxy": {
+            "filter": ""
+          },
+          "queryType": "0",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "table": {
+            "skipEmptyValues": false
+          },
+          "tags": {
+            "filter": ""
+          },
+          "textFilter": "",
+          "trigger": {
+            "filter": ""
+          }
         }
       ],
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "orientation": "horizontal",
-        "displayMode": "gradient",
-        "showUnfilled": true
+      "title": "Heap Free (Bar)",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "alexanderzobnin-zabbix-datasource",
+        "uid": "ffk089lf2vfuof"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "bytes",
-          "min": 0,
+          "mappings": [],
           "max": 4194304,
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               },
               {
                 "color": "yellow",
@@ -416,49 +623,173 @@
                 "value": 3565158
               }
             ]
-          }
+          },
+          "unit": "bytes"
         },
         "overrides": []
-      }
-    },
-    {
-      "id": 7,
-      "type": "row",
-      "title": "Flash Storage",
+      },
       "gridPos": {
-        "x": 0,
-        "y": 13,
-        "w": 24,
-        "h": 1
+        "h": 4,
+        "w": 12,
+        "x": 12,
+        "y": 9
       },
-      "collapsed": false
-    },
-    {
-      "id": 8,
-      "type": "stat",
-      "title": "Flash Total",
-      "gridPos": {
-        "x": 0,
-        "y": 14,
-        "w": 6,
-        "h": 4
+      "id": 6,
+      "options": {
+        "displayMode": "gradient",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
       },
-      "datasource": {
-        "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
-      },
+      "pluginVersion": "12.4.2",
       "targets": [
         {
           "application": {
             "filter": ""
           },
+          "countTriggersBy": "",
           "datasource": {
             "type": "alexanderzobnin-zabbix-datasource",
             "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
           },
+          "evaltype": "0",
           "functions": [],
           "group": {
-            "filter": "ESP32"
+            "filter": "Smartthings"
+          },
+          "host": {
+            "filter": "$host"
+          },
+          "item": {
+            "filter": "PSRAM Free"
+          },
+          "itemTag": {
+            "filter": ""
+          },
+          "macro": {
+            "filter": ""
+          },
+          "options": {
+            "count": false,
+            "disableDataAlignment": false,
+            "showDisabledItems": false,
+            "skipEmptyValues": false,
+            "useTrends": "default",
+            "useZabbixValueMapping": false
+          },
+          "proxy": {
+            "filter": ""
+          },
+          "queryType": "0",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "table": {
+            "skipEmptyValues": false
+          },
+          "tags": {
+            "filter": ""
+          },
+          "textFilter": "",
+          "trigger": {
+            "filter": ""
+          }
+        }
+      ],
+      "title": "PSRAM Free (Bar)",
+      "type": "bargauge"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 13
+      },
+      "id": 7,
+      "panels": [],
+      "title": "Flash Storage",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "alexanderzobnin-zabbix-datasource",
+        "uid": "ffk089lf2vfuof"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 14
+      },
+      "id": 8,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.4.2",
+      "targets": [
+        {
+          "application": {
+            "filter": ""
+          },
+          "countTriggersBy": "",
+          "datasource": {
+            "type": "alexanderzobnin-zabbix-datasource",
+            "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
+          },
+          "evaltype": "0",
+          "functions": [],
+          "group": {
+            "filter": "Smartthings"
           },
           "host": {
             "filter": "$host"
@@ -466,63 +797,102 @@
           "item": {
             "filter": "Flash Total Size"
           },
-          "refId": "A"
+          "itemTag": {
+            "filter": ""
+          },
+          "macro": {
+            "filter": ""
+          },
+          "options": {
+            "count": false,
+            "disableDataAlignment": false,
+            "showDisabledItems": false,
+            "skipEmptyValues": false,
+            "useTrends": "default",
+            "useZabbixValueMapping": false
+          },
+          "proxy": {
+            "filter": ""
+          },
+          "queryType": "0",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "table": {
+            "skipEmptyValues": false
+          },
+          "tags": {
+            "filter": ""
+          },
+          "textFilter": "",
+          "trigger": {
+            "filter": ""
+          }
         }
       ],
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "colorMode": "background",
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto"
+      "title": "Flash Total",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "alexanderzobnin-zabbix-datasource",
+        "uid": "ffk089lf2vfuof"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "bytes",
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "blue",
-                "value": null
+                "value": 0
               }
             ]
-          }
+          },
+          "unit": "bytes"
         },
         "overrides": []
-      }
-    },
-    {
-      "id": 9,
-      "type": "stat",
-      "title": "Firmware Size",
+      },
       "gridPos": {
-        "x": 6,
-        "y": 14,
+        "h": 4,
         "w": 6,
-        "h": 4
+        "x": 6,
+        "y": 14
       },
-      "datasource": {
-        "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
+      "id": 9,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
+      "pluginVersion": "12.4.2",
       "targets": [
         {
           "application": {
             "filter": ""
           },
+          "countTriggersBy": "",
           "datasource": {
             "type": "alexanderzobnin-zabbix-datasource",
             "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
           },
+          "evaltype": "0",
           "functions": [],
           "group": {
-            "filter": "ESP32"
+            "filter": "Smartthings"
           },
           "host": {
             "filter": "$host"
@@ -530,63 +900,102 @@
           "item": {
             "filter": "Flash Sketch Size"
           },
-          "refId": "A"
+          "itemTag": {
+            "filter": ""
+          },
+          "macro": {
+            "filter": ""
+          },
+          "options": {
+            "count": false,
+            "disableDataAlignment": false,
+            "showDisabledItems": false,
+            "skipEmptyValues": false,
+            "useTrends": "default",
+            "useZabbixValueMapping": false
+          },
+          "proxy": {
+            "filter": ""
+          },
+          "queryType": "0",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "table": {
+            "skipEmptyValues": false
+          },
+          "tags": {
+            "filter": ""
+          },
+          "textFilter": "",
+          "trigger": {
+            "filter": ""
+          }
         }
       ],
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "colorMode": "background",
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto"
+      "title": "Firmware Size",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "alexanderzobnin-zabbix-datasource",
+        "uid": "ffk089lf2vfuof"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "bytes",
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "blue",
-                "value": null
+                "value": 0
               }
             ]
-          }
+          },
+          "unit": "bytes"
         },
         "overrides": []
-      }
-    },
-    {
-      "id": 10,
-      "type": "stat",
-      "title": "Free for OTA",
+      },
       "gridPos": {
-        "x": 12,
-        "y": 14,
+        "h": 4,
         "w": 6,
-        "h": 4
+        "x": 12,
+        "y": 14
       },
-      "datasource": {
-        "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
+      "id": 10,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
+      "pluginVersion": "12.4.2",
       "targets": [
         {
           "application": {
             "filter": ""
           },
+          "countTriggersBy": "",
           "datasource": {
             "type": "alexanderzobnin-zabbix-datasource",
             "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
           },
+          "evaltype": "0",
           "functions": [],
           "group": {
-            "filter": "ESP32"
+            "filter": "Smartthings"
           },
           "host": {
             "filter": "$host"
@@ -594,63 +1003,102 @@
           "item": {
             "filter": "Flash Free Space (OTA)"
           },
-          "refId": "A"
+          "itemTag": {
+            "filter": ""
+          },
+          "macro": {
+            "filter": ""
+          },
+          "options": {
+            "count": false,
+            "disableDataAlignment": false,
+            "showDisabledItems": false,
+            "skipEmptyValues": false,
+            "useTrends": "default",
+            "useZabbixValueMapping": false
+          },
+          "proxy": {
+            "filter": ""
+          },
+          "queryType": "0",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "table": {
+            "skipEmptyValues": false
+          },
+          "tags": {
+            "filter": ""
+          },
+          "textFilter": "",
+          "trigger": {
+            "filter": ""
+          }
         }
       ],
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "colorMode": "background",
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto"
+      "title": "Free for OTA",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "alexanderzobnin-zabbix-datasource",
+        "uid": "ffk089lf2vfuof"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "bytes",
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "blue",
-                "value": null
+                "value": 0
               }
             ]
-          }
+          },
+          "unit": "bytes"
         },
         "overrides": []
-      }
-    },
-    {
-      "id": 11,
-      "type": "stat",
-      "title": "PSRAM Total",
+      },
       "gridPos": {
-        "x": 18,
-        "y": 14,
+        "h": 4,
         "w": 6,
-        "h": 4
+        "x": 18,
+        "y": 14
       },
-      "datasource": {
-        "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
+      "id": 11,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
+      "pluginVersion": "12.4.2",
       "targets": [
         {
           "application": {
             "filter": ""
           },
+          "countTriggersBy": "",
           "datasource": {
             "type": "alexanderzobnin-zabbix-datasource",
             "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
           },
+          "evaltype": "0",
           "functions": [],
           "group": {
-            "filter": "ESP32"
+            "filter": "Smartthings"
           },
           "host": {
             "filter": "$host"
@@ -658,63 +1106,139 @@
           "item": {
             "filter": "PSRAM Total"
           },
-          "refId": "A"
+          "itemTag": {
+            "filter": ""
+          },
+          "macro": {
+            "filter": ""
+          },
+          "options": {
+            "count": false,
+            "disableDataAlignment": false,
+            "showDisabledItems": false,
+            "skipEmptyValues": false,
+            "useTrends": "default",
+            "useZabbixValueMapping": false
+          },
+          "proxy": {
+            "filter": ""
+          },
+          "queryType": "0",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "table": {
+            "skipEmptyValues": false
+          },
+          "tags": {
+            "filter": ""
+          },
+          "textFilter": "",
+          "trigger": {
+            "filter": ""
+          }
         }
       ],
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "colorMode": "background",
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto"
+      "title": "PSRAM Total",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "alexanderzobnin-zabbix-datasource",
+        "uid": "ffk089lf2vfuof"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "bytes",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "blue",
-                "value": null
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
               }
             ]
-          }
+          },
+          "unit": "bytes"
         },
         "overrides": []
-      }
-    },
-    {
-      "id": 12,
-      "type": "timeseries",
-      "title": "Flash Free Space (OTA) History",
+      },
       "gridPos": {
-        "x": 0,
-        "y": 18,
+        "h": 6,
         "w": 24,
-        "h": 6
+        "x": 0,
+        "y": 18
       },
-      "datasource": {
-        "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
+      "id": 12,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
       },
+      "pluginVersion": "12.4.2",
       "targets": [
         {
           "application": {
             "filter": ""
           },
+          "countTriggersBy": "",
           "datasource": {
             "type": "alexanderzobnin-zabbix-datasource",
             "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
           },
+          "evaltype": "0",
           "functions": [],
           "group": {
-            "filter": "ESP32"
+            "filter": "Smartthings"
           },
           "host": {
             "filter": "$host"
@@ -722,69 +1246,115 @@
           "item": {
             "filter": "Flash Free Space (OTA)"
           },
-          "refId": "A"
+          "itemTag": {
+            "filter": ""
+          },
+          "macro": {
+            "filter": ""
+          },
+          "options": {
+            "count": false,
+            "disableDataAlignment": false,
+            "showDisabledItems": false,
+            "skipEmptyValues": false,
+            "useTrends": "default",
+            "useZabbixValueMapping": false
+          },
+          "proxy": {
+            "filter": ""
+          },
+          "queryType": "0",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "table": {
+            "skipEmptyValues": false
+          },
+          "tags": {
+            "filter": ""
+          },
+          "textFilter": "",
+          "trigger": {
+            "filter": ""
+          }
         }
       ],
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        },
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom"
-        }
+      "title": "Flash Free Space (OTA) History",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 24
+      },
+      "id": 13,
+      "panels": [],
+      "title": "System",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "alexanderzobnin-zabbix-datasource",
+        "uid": "ffk089lf2vfuof"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "bytes",
-          "custom": {
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "spanNulls": false
-          }
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "s"
         },
         "overrides": []
-      }
-    },
-    {
-      "id": 13,
-      "type": "row",
-      "title": "System",
-      "gridPos": {
-        "x": 0,
-        "y": 24,
-        "w": 24,
-        "h": 1
       },
-      "collapsed": false
-    },
-    {
-      "id": 14,
-      "type": "stat",
-      "title": "Uptime",
       "gridPos": {
-        "x": 0,
-        "y": 25,
+        "h": 4,
         "w": 4,
-        "h": 4
+        "x": 0,
+        "y": 25
       },
-      "datasource": {
-        "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
+      "id": 14,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
+      "pluginVersion": "12.4.2",
       "targets": [
         {
           "application": {
             "filter": ""
           },
+          "countTriggersBy": "",
           "datasource": {
             "type": "alexanderzobnin-zabbix-datasource",
             "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
           },
+          "evaltype": "0",
           "functions": [],
           "group": {
-            "filter": "ESP32"
+            "filter": "Smartthings"
           },
           "host": {
             "filter": "$host"
@@ -792,63 +1362,102 @@
           "item": {
             "filter": "Uptime"
           },
-          "refId": "A"
+          "itemTag": {
+            "filter": ""
+          },
+          "macro": {
+            "filter": ""
+          },
+          "options": {
+            "count": false,
+            "disableDataAlignment": false,
+            "showDisabledItems": false,
+            "skipEmptyValues": false,
+            "useTrends": "default",
+            "useZabbixValueMapping": false
+          },
+          "proxy": {
+            "filter": ""
+          },
+          "queryType": "0",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "table": {
+            "skipEmptyValues": false
+          },
+          "tags": {
+            "filter": ""
+          },
+          "textFilter": "",
+          "trigger": {
+            "filter": ""
+          }
         }
       ],
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "colorMode": "background",
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto"
+      "title": "Uptime",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "alexanderzobnin-zabbix-datasource",
+        "uid": "ffk089lf2vfuof"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "s",
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "blue",
-                "value": null
+                "value": 0
               }
             ]
-          }
+          },
+          "unit": "MHz"
         },
         "overrides": []
-      }
-    },
-    {
-      "id": 15,
-      "type": "stat",
-      "title": "CPU Frequency",
+      },
       "gridPos": {
-        "x": 4,
-        "y": 25,
+        "h": 4,
         "w": 4,
-        "h": 4
+        "x": 4,
+        "y": 25
       },
-      "datasource": {
-        "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
+      "id": 15,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
+      "pluginVersion": "12.4.2",
       "targets": [
         {
           "application": {
             "filter": ""
           },
+          "countTriggersBy": "",
           "datasource": {
             "type": "alexanderzobnin-zabbix-datasource",
             "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
           },
+          "evaltype": "0",
           "functions": [],
           "group": {
-            "filter": "ESP32"
+            "filter": "Smartthings"
           },
           "host": {
             "filter": "$host"
@@ -856,63 +1465,102 @@
           "item": {
             "filter": "CPU Frequency"
           },
-          "refId": "A"
+          "itemTag": {
+            "filter": ""
+          },
+          "macro": {
+            "filter": ""
+          },
+          "options": {
+            "count": false,
+            "disableDataAlignment": false,
+            "showDisabledItems": false,
+            "skipEmptyValues": false,
+            "useTrends": "default",
+            "useZabbixValueMapping": false
+          },
+          "proxy": {
+            "filter": ""
+          },
+          "queryType": "0",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "table": {
+            "skipEmptyValues": false
+          },
+          "tags": {
+            "filter": ""
+          },
+          "textFilter": "",
+          "trigger": {
+            "filter": ""
+          }
         }
       ],
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "colorMode": "background",
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto"
+      "title": "CPU Frequency",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "alexanderzobnin-zabbix-datasource",
+        "uid": "ffk089lf2vfuof"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "MHz",
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "blue",
-                "value": null
+                "value": 0
               }
             ]
-          }
+          },
+          "unit": "short"
         },
         "overrides": []
-      }
-    },
-    {
-      "id": 16,
-      "type": "stat",
-      "title": "FreeRTOS Tasks",
+      },
       "gridPos": {
-        "x": 8,
-        "y": 25,
+        "h": 4,
         "w": 4,
-        "h": 4
+        "x": 8,
+        "y": 25
       },
-      "datasource": {
-        "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
+      "id": 16,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
+      "pluginVersion": "12.4.2",
       "targets": [
         {
           "application": {
             "filter": ""
           },
+          "countTriggersBy": "",
           "datasource": {
             "type": "alexanderzobnin-zabbix-datasource",
             "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
           },
+          "evaltype": "0",
           "functions": [],
           "group": {
-            "filter": "ESP32"
+            "filter": "Smartthings"
           },
           "host": {
             "filter": "$host"
@@ -920,63 +1568,102 @@
           "item": {
             "filter": "FreeRTOS Task Count"
           },
-          "refId": "A"
+          "itemTag": {
+            "filter": ""
+          },
+          "macro": {
+            "filter": ""
+          },
+          "options": {
+            "count": false,
+            "disableDataAlignment": false,
+            "showDisabledItems": false,
+            "skipEmptyValues": false,
+            "useTrends": "default",
+            "useZabbixValueMapping": false
+          },
+          "proxy": {
+            "filter": ""
+          },
+          "queryType": "0",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "table": {
+            "skipEmptyValues": false
+          },
+          "tags": {
+            "filter": ""
+          },
+          "textFilter": "",
+          "trigger": {
+            "filter": ""
+          }
         }
       ],
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "colorMode": "background",
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto"
+      "title": "FreeRTOS Tasks",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "alexanderzobnin-zabbix-datasource",
+        "uid": "ffk089lf2vfuof"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "blue",
-                "value": null
+                "value": 0
               }
             ]
-          }
+          },
+          "unit": "celsius"
         },
         "overrides": []
-      }
-    },
-    {
-      "id": 17,
-      "type": "stat",
-      "title": "Chip Temp",
+      },
       "gridPos": {
-        "x": 12,
-        "y": 25,
+        "h": 4,
         "w": 4,
-        "h": 4
+        "x": 12,
+        "y": 25
       },
-      "datasource": {
-        "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
+      "id": 17,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
+      "pluginVersion": "12.4.2",
       "targets": [
         {
           "application": {
             "filter": ""
           },
+          "countTriggersBy": "",
           "datasource": {
             "type": "alexanderzobnin-zabbix-datasource",
             "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
           },
+          "evaltype": "0",
           "functions": [],
           "group": {
-            "filter": "ESP32"
+            "filter": "Smartthings"
           },
           "host": {
             "filter": "$host"
@@ -984,63 +1671,102 @@
           "item": {
             "filter": "Internal Chip Temperature"
           },
-          "refId": "A"
+          "itemTag": {
+            "filter": ""
+          },
+          "macro": {
+            "filter": ""
+          },
+          "options": {
+            "count": false,
+            "disableDataAlignment": false,
+            "showDisabledItems": false,
+            "skipEmptyValues": false,
+            "useTrends": "default",
+            "useZabbixValueMapping": false
+          },
+          "proxy": {
+            "filter": ""
+          },
+          "queryType": "0",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "table": {
+            "skipEmptyValues": false
+          },
+          "tags": {
+            "filter": ""
+          },
+          "textFilter": "",
+          "trigger": {
+            "filter": ""
+          }
         }
       ],
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "colorMode": "background",
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto"
+      "title": "Chip Temp",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "alexanderzobnin-zabbix-datasource",
+        "uid": "ffk089lf2vfuof"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "celsius",
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "blue",
-                "value": null
+                "value": 0
               }
             ]
-          }
+          },
+          "unit": "short"
         },
         "overrides": []
-      }
-    },
-    {
-      "id": 18,
-      "type": "stat",
-      "title": "Reset Reason",
+      },
       "gridPos": {
-        "x": 16,
-        "y": 25,
+        "h": 4,
         "w": 4,
-        "h": 4
+        "x": 16,
+        "y": 25
       },
-      "datasource": {
-        "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
+      "id": 18,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
+      "pluginVersion": "12.4.2",
       "targets": [
         {
           "application": {
             "filter": ""
           },
+          "countTriggersBy": "",
           "datasource": {
             "type": "alexanderzobnin-zabbix-datasource",
             "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
           },
+          "evaltype": "0",
           "functions": [],
           "group": {
-            "filter": "ESP32"
+            "filter": "Smartthings"
           },
           "host": {
             "filter": "$host"
@@ -1048,63 +1774,102 @@
           "item": {
             "filter": "Last Reset Reason"
           },
-          "refId": "A"
+          "itemTag": {
+            "filter": ""
+          },
+          "macro": {
+            "filter": ""
+          },
+          "options": {
+            "count": false,
+            "disableDataAlignment": false,
+            "showDisabledItems": false,
+            "skipEmptyValues": false,
+            "useTrends": "default",
+            "useZabbixValueMapping": false
+          },
+          "proxy": {
+            "filter": ""
+          },
+          "queryType": "0",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "table": {
+            "skipEmptyValues": false
+          },
+          "tags": {
+            "filter": ""
+          },
+          "textFilter": "",
+          "trigger": {
+            "filter": ""
+          }
         }
       ],
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "colorMode": "background",
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto"
+      "title": "Reset Reason",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "alexanderzobnin-zabbix-datasource",
+        "uid": "ffk089lf2vfuof"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "blue",
-                "value": null
+                "value": 0
               }
             ]
-          }
+          },
+          "unit": "short"
         },
         "overrides": []
-      }
-    },
-    {
-      "id": 19,
-      "type": "stat",
-      "title": "Wi-Fi Channel",
+      },
       "gridPos": {
-        "x": 20,
-        "y": 25,
+        "h": 4,
         "w": 4,
-        "h": 4
+        "x": 20,
+        "y": 25
       },
-      "datasource": {
-        "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
+      "id": 19,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
+      "pluginVersion": "12.4.2",
       "targets": [
         {
           "application": {
             "filter": ""
           },
+          "countTriggersBy": "",
           "datasource": {
             "type": "alexanderzobnin-zabbix-datasource",
             "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
           },
+          "evaltype": "0",
           "functions": [],
           "group": {
-            "filter": "ESP32"
+            "filter": "Smartthings"
           },
           "host": {
             "filter": "$host"
@@ -1112,63 +1877,139 @@
           "item": {
             "filter": "Wi-Fi Channel"
           },
-          "refId": "A"
+          "itemTag": {
+            "filter": ""
+          },
+          "macro": {
+            "filter": ""
+          },
+          "options": {
+            "count": false,
+            "disableDataAlignment": false,
+            "showDisabledItems": false,
+            "skipEmptyValues": false,
+            "useTrends": "default",
+            "useZabbixValueMapping": false
+          },
+          "proxy": {
+            "filter": ""
+          },
+          "queryType": "0",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "table": {
+            "skipEmptyValues": false
+          },
+          "tags": {
+            "filter": ""
+          },
+          "textFilter": "",
+          "trigger": {
+            "filter": ""
+          }
         }
       ],
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "colorMode": "background",
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto"
+      "title": "Wi-Fi Channel",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "alexanderzobnin-zabbix-datasource",
+        "uid": "ffk089lf2vfuof"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "blue",
-                "value": null
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
               }
             ]
-          }
+          },
+          "unit": "celsius"
         },
         "overrides": []
-      }
-    },
-    {
-      "id": 20,
-      "type": "timeseries",
-      "title": "Chip Temperature History",
+      },
       "gridPos": {
-        "x": 0,
-        "y": 29,
+        "h": 7,
         "w": 12,
-        "h": 7
+        "x": 0,
+        "y": 29
       },
-      "datasource": {
-        "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
+      "id": 20,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
       },
+      "pluginVersion": "12.4.2",
       "targets": [
         {
           "application": {
             "filter": ""
           },
+          "countTriggersBy": "",
           "datasource": {
             "type": "alexanderzobnin-zabbix-datasource",
             "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
           },
+          "evaltype": "0",
           "functions": [],
           "group": {
-            "filter": "ESP32"
+            "filter": "Smartthings"
           },
           "host": {
             "filter": "$host"
@@ -1176,57 +2017,139 @@
           "item": {
             "filter": "Internal Chip Temperature"
           },
-          "refId": "A"
+          "itemTag": {
+            "filter": ""
+          },
+          "macro": {
+            "filter": ""
+          },
+          "options": {
+            "count": false,
+            "disableDataAlignment": false,
+            "showDisabledItems": false,
+            "skipEmptyValues": false,
+            "useTrends": "default",
+            "useZabbixValueMapping": false
+          },
+          "proxy": {
+            "filter": ""
+          },
+          "queryType": "0",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "table": {
+            "skipEmptyValues": false
+          },
+          "tags": {
+            "filter": ""
+          },
+          "textFilter": "",
+          "trigger": {
+            "filter": ""
+          }
         }
       ],
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        },
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom"
-        }
+      "title": "Chip Temperature History",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "alexanderzobnin-zabbix-datasource",
+        "uid": "ffk089lf2vfuof"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "celsius",
+          "color": {
+            "mode": "palette-classic"
+          },
           "custom": {
-            "lineWidth": 1,
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
             "fillOpacity": 10,
-            "spanNulls": false
-          }
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "dBm"
         },
         "overrides": []
-      }
-    },
-    {
-      "id": 21,
-      "type": "timeseries",
-      "title": "Wi-Fi RSSI History",
+      },
       "gridPos": {
-        "x": 12,
-        "y": 29,
+        "h": 7,
         "w": 12,
-        "h": 7
+        "x": 12,
+        "y": 29
       },
-      "datasource": {
-        "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
+      "id": 21,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
       },
+      "pluginVersion": "12.4.2",
       "targets": [
         {
           "application": {
             "filter": ""
           },
+          "countTriggersBy": "",
           "datasource": {
             "type": "alexanderzobnin-zabbix-datasource",
             "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
           },
+          "evaltype": "0",
           "functions": [],
           "group": {
-            "filter": "ESP32"
+            "filter": "Smartthings"
           },
           "host": {
             "filter": "$host"
@@ -1234,104 +2157,75 @@
           "item": {
             "filter": "Wi-Fi Signal (RSSI)"
           },
-          "refId": "A"
-        }
-      ],
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        },
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom"
-        }
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "dBm",
-          "custom": {
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "spanNulls": false
-          }
-        },
-        "overrides": []
-      }
-    },
-    {
-      "id": 22,
-      "type": "row",
-      "title": "OBD2 Application Health",
-      "gridPos": {
-        "x": 0,
-        "y": 36,
-        "w": 24,
-        "h": 1
-      },
-      "collapsed": false
-    },
-    {
-      "id": 23,
-      "type": "stat",
-      "title": "Bluetooth Connected",
-      "gridPos": {
-        "x": 0,
-        "y": 37,
-        "w": 6,
-        "h": 5
-      },
-      "datasource": {
-        "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
-      },
-      "targets": [
-        {
-          "application": {
+          "itemTag": {
             "filter": ""
           },
-          "datasource": {
-            "type": "alexanderzobnin-zabbix-datasource",
-            "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
+          "macro": {
+            "filter": ""
           },
-          "functions": [],
-          "group": {
-            "filter": "ESP32"
+          "options": {
+            "count": false,
+            "disableDataAlignment": false,
+            "showDisabledItems": false,
+            "skipEmptyValues": false,
+            "useTrends": "default",
+            "useZabbixValueMapping": false
           },
-          "host": {
-            "filter": "$host"
+          "proxy": {
+            "filter": ""
           },
-          "item": {
-            "filter": "OBD2 Bluetooth Connected"
+          "queryType": "0",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "table": {
+            "skipEmptyValues": false
           },
-          "refId": "A"
+          "tags": {
+            "filter": ""
+          },
+          "textFilter": "",
+          "trigger": {
+            "filter": ""
+          }
         }
       ],
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "colorMode": "background",
-        "graphMode": "none",
-        "justifyMode": "center"
+      "title": "Wi-Fi RSSI History",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 36
+      },
+      "id": 22,
+      "panels": [],
+      "title": "OBD2 Application Health",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "alexanderzobnin-zabbix-datasource",
+        "uid": "ffk089lf2vfuof"
       },
       "fieldConfig": {
         "defaults": {
           "mappings": [
             {
-              "type": "value",
               "options": {
                 "0": {
-                  "text": "Disconnected",
-                  "color": "red"
+                  "color": "red",
+                  "text": "Disconnected"
                 },
                 "1": {
-                  "text": "Connected",
-                  "color": "green"
+                  "color": "green",
+                  "text": "Connected"
                 }
-              }
+              },
+              "type": "value"
             }
           ],
           "thresholds": {
@@ -1339,7 +2233,7 @@
             "steps": [
               {
                 "color": "red",
-                "value": null
+                "value": 0
               },
               {
                 "color": "green",
@@ -1349,34 +2243,149 @@
           }
         },
         "overrides": []
-      }
-    },
-    {
-      "id": 24,
-      "type": "stat",
-      "title": "Active OBD2 PIDs",
+      },
       "gridPos": {
-        "x": 6,
-        "y": 37,
+        "h": 5,
         "w": 6,
-        "h": 5
+        "x": 0,
+        "y": 37
       },
-      "datasource": {
-        "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
+      "id": 23,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
+      "pluginVersion": "12.4.2",
       "targets": [
         {
           "application": {
             "filter": ""
           },
+          "countTriggersBy": "",
           "datasource": {
             "type": "alexanderzobnin-zabbix-datasource",
             "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
           },
+          "evaltype": "0",
           "functions": [],
           "group": {
-            "filter": "ESP32"
+            "filter": "Smartthings"
+          },
+          "host": {
+            "filter": "$host"
+          },
+          "item": {
+            "filter": "OBD2 Bluetooth Connected"
+          },
+          "itemTag": {
+            "filter": ""
+          },
+          "macro": {
+            "filter": ""
+          },
+          "options": {
+            "count": false,
+            "disableDataAlignment": false,
+            "showDisabledItems": false,
+            "skipEmptyValues": false,
+            "useTrends": "default",
+            "useZabbixValueMapping": false
+          },
+          "proxy": {
+            "filter": ""
+          },
+          "queryType": "0",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "table": {
+            "skipEmptyValues": false
+          },
+          "tags": {
+            "filter": ""
+          },
+          "textFilter": "",
+          "trigger": {
+            "filter": ""
+          }
+        }
+      ],
+      "title": "Bluetooth Connected",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "alexanderzobnin-zabbix-datasource",
+        "uid": "ffk089lf2vfuof"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 6,
+        "y": 37
+      },
+      "id": 24,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.4.2",
+      "targets": [
+        {
+          "application": {
+            "filter": ""
+          },
+          "countTriggersBy": "",
+          "datasource": {
+            "type": "alexanderzobnin-zabbix-datasource",
+            "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
+          },
+          "evaltype": "0",
+          "functions": [],
+          "group": {
+            "filter": "Smartthings"
           },
           "host": {
             "filter": "$host"
@@ -1384,212 +2393,205 @@
           "item": {
             "filter": "OBD2 Active PIDs"
           },
-          "refId": "A"
-        }
-      ],
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "colorMode": "background",
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "blue",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      }
-    },
-    {
-      "id": 25,
-      "type": "stat",
-      "title": "Failed PID Reads",
-      "gridPos": {
-        "x": 12,
-        "y": 37,
-        "w": 6,
-        "h": 5
-      },
-      "datasource": {
-        "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
-      },
-      "targets": [
-        {
-          "application": {
+          "itemTag": {
             "filter": ""
           },
-          "datasource": {
-            "type": "alexanderzobnin-zabbix-datasource",
-            "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
-          },
-          "functions": [],
-          "group": {
-            "filter": "ESP32"
-          },
-          "host": {
-            "filter": "$host"
-          },
-          "item": {
-            "filter": "OBD2 Failed PID Reads"
-          },
-          "refId": "A"
-        }
-      ],
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "colorMode": "background",
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "blue",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      }
-    },
-    {
-      "id": 26,
-      "type": "stat",
-      "title": "Reconnect Count",
-      "gridPos": {
-        "x": 18,
-        "y": 37,
-        "w": 6,
-        "h": 5
-      },
-      "datasource": {
-        "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
-      },
-      "targets": [
-        {
-          "application": {
+          "macro": {
             "filter": ""
           },
-          "datasource": {
-            "type": "alexanderzobnin-zabbix-datasource",
-            "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
+          "options": {
+            "count": false,
+            "disableDataAlignment": false,
+            "showDisabledItems": false,
+            "skipEmptyValues": false,
+            "useTrends": "default",
+            "useZabbixValueMapping": false
           },
-          "functions": [],
-          "group": {
-            "filter": "ESP32"
-          },
-          "host": {
-            "filter": "$host"
-          },
-          "item": {
-            "filter": "Connection Reconnect Count"
-          },
-          "refId": "A"
-        }
-      ],
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "colorMode": "background",
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "blue",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      }
-    },
-    {
-      "id": 27,
-      "type": "timeseries",
-      "title": "OBD2 Failed Reads & Reconnects History",
-      "gridPos": {
-        "x": 0,
-        "y": 42,
-        "w": 12,
-        "h": 7
-      },
-      "datasource": {
-        "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
-      },
-      "targets": [
-        {
-          "application": {
+          "proxy": {
             "filter": ""
           },
-          "datasource": {
-            "type": "alexanderzobnin-zabbix-datasource",
-            "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
-          },
-          "functions": [],
-          "group": {
-            "filter": "ESP32"
-          },
-          "host": {
-            "filter": "$host"
-          },
-          "item": {
-            "filter": "OBD2 Failed PID Reads"
-          },
+          "queryType": "0",
           "refId": "A",
-          "legendFormat": "Failed PID Reads"
+          "resultFormat": "time_series",
+          "schema": 12,
+          "table": {
+            "skipEmptyValues": false
+          },
+          "tags": {
+            "filter": ""
+          },
+          "textFilter": "",
+          "trigger": {
+            "filter": ""
+          }
+        }
+      ],
+      "title": "Active OBD2 PIDs",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "alexanderzobnin-zabbix-datasource",
+        "uid": "ffk089lf2vfuof"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "short"
         },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 12,
+        "y": 37
+      },
+      "id": 25,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.4.2",
+      "targets": [
         {
           "application": {
             "filter": ""
           },
+          "countTriggersBy": "",
           "datasource": {
             "type": "alexanderzobnin-zabbix-datasource",
             "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
           },
+          "evaltype": "0",
           "functions": [],
           "group": {
-            "filter": "ESP32"
+            "filter": "Smartthings"
+          },
+          "host": {
+            "filter": "$host"
+          },
+          "item": {
+            "filter": "OBD2 Failed PID Reads"
+          },
+          "itemTag": {
+            "filter": ""
+          },
+          "macro": {
+            "filter": ""
+          },
+          "options": {
+            "count": false,
+            "disableDataAlignment": false,
+            "showDisabledItems": false,
+            "skipEmptyValues": false,
+            "useTrends": "default",
+            "useZabbixValueMapping": false
+          },
+          "proxy": {
+            "filter": ""
+          },
+          "queryType": "0",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "table": {
+            "skipEmptyValues": false
+          },
+          "tags": {
+            "filter": ""
+          },
+          "textFilter": "",
+          "trigger": {
+            "filter": ""
+          }
+        }
+      ],
+      "title": "Failed PID Reads",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "alexanderzobnin-zabbix-datasource",
+        "uid": "ffk089lf2vfuof"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 18,
+        "y": 37
+      },
+      "id": 26,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.4.2",
+      "targets": [
+        {
+          "application": {
+            "filter": ""
+          },
+          "countTriggersBy": "",
+          "datasource": {
+            "type": "alexanderzobnin-zabbix-datasource",
+            "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
+          },
+          "evaltype": "0",
+          "functions": [],
+          "group": {
+            "filter": "Smartthings"
           },
           "host": {
             "filter": "$host"
@@ -1597,58 +2599,332 @@
           "item": {
             "filter": "Connection Reconnect Count"
           },
-          "refId": "B",
-          "legendFormat": "Reconnects"
+          "itemTag": {
+            "filter": ""
+          },
+          "macro": {
+            "filter": ""
+          },
+          "options": {
+            "count": false,
+            "disableDataAlignment": false,
+            "showDisabledItems": false,
+            "skipEmptyValues": false,
+            "useTrends": "default",
+            "useZabbixValueMapping": false
+          },
+          "proxy": {
+            "filter": ""
+          },
+          "queryType": "0",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "table": {
+            "skipEmptyValues": false
+          },
+          "tags": {
+            "filter": ""
+          },
+          "textFilter": "",
+          "trigger": {
+            "filter": ""
+          }
         }
       ],
+      "title": "Reconnect Count",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "alexanderzobnin-zabbix-datasource",
+        "uid": "ffk089lf2vfuof"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": ""
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 42
+      },
+      "id": 27,
       "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
         "tooltip": {
+          "hideZeros": false,
           "mode": "multi",
           "sort": "none"
-        },
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom"
         }
       },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "",
-          "custom": {
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "spanNulls": false
-          }
-        },
-        "overrides": []
-      }
-    },
-    {
-      "id": 28,
-      "type": "timeseries",
-      "title": "Zabbix Send Errors History",
-      "gridPos": {
-        "x": 12,
-        "y": 42,
-        "w": 12,
-        "h": 7
-      },
-      "datasource": {
-        "type": "alexanderzobnin-zabbix-datasource",
-        "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
-      },
+      "pluginVersion": "12.4.2",
       "targets": [
         {
           "application": {
             "filter": ""
           },
+          "countTriggersBy": "",
           "datasource": {
             "type": "alexanderzobnin-zabbix-datasource",
             "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
           },
+          "evaltype": "0",
+          "functions": [],
+          "group": {
+            "filter": "Smartthings"
+          },
+          "host": {
+            "filter": "$host"
+          },
+          "item": {
+            "filter": "OBD2 Failed PID Reads"
+          },
+          "itemTag": {
+            "filter": ""
+          },
+          "legendFormat": "Failed PID Reads",
+          "macro": {
+            "filter": ""
+          },
+          "options": {
+            "count": false,
+            "disableDataAlignment": false,
+            "showDisabledItems": false,
+            "skipEmptyValues": false,
+            "useTrends": "default",
+            "useZabbixValueMapping": false
+          },
+          "proxy": {
+            "filter": ""
+          },
+          "queryType": "0",
+          "refId": "A",
+          "schema": 12,
+          "table": {
+            "skipEmptyValues": false
+          },
+          "tags": {
+            "filter": ""
+          },
+          "textFilter": "",
+          "trigger": {
+            "filter": ""
+          }
+        },
+        {
+          "application": {
+            "filter": ""
+          },
+          "countTriggersBy": "",
+          "datasource": {
+            "type": "alexanderzobnin-zabbix-datasource",
+            "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
+          },
+          "evaltype": "0",
           "functions": [],
           "group": {
             "filter": "ESP32"
+          },
+          "host": {
+            "filter": "$host"
+          },
+          "item": {
+            "filter": "Connection Reconnect Count"
+          },
+          "itemTag": {
+            "filter": ""
+          },
+          "legendFormat": "Reconnects",
+          "macro": {
+            "filter": ""
+          },
+          "options": {
+            "count": false,
+            "disableDataAlignment": false,
+            "showDisabledItems": false,
+            "skipEmptyValues": false,
+            "useTrends": "default",
+            "useZabbixValueMapping": false
+          },
+          "proxy": {
+            "filter": ""
+          },
+          "queryType": "0",
+          "refId": "B",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "table": {
+            "skipEmptyValues": false
+          },
+          "tags": {
+            "filter": ""
+          },
+          "textFilter": "",
+          "trigger": {
+            "filter": ""
+          }
+        }
+      ],
+      "title": "OBD2 Failed Reads & Reconnects History",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "alexanderzobnin-zabbix-datasource",
+        "uid": "ffk089lf2vfuof"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": ""
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 42
+      },
+      "id": 28,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.4.2",
+      "targets": [
+        {
+          "application": {
+            "filter": ""
+          },
+          "countTriggersBy": "",
+          "datasource": {
+            "type": "alexanderzobnin-zabbix-datasource",
+            "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
+          },
+          "evaltype": "0",
+          "functions": [],
+          "group": {
+            "filter": "Smartthings"
           },
           "host": {
             "filter": "$host"
@@ -1656,104 +2932,92 @@
           "item": {
             "filter": "Zabbix Send Errors"
           },
+          "itemTag": {
+            "filter": ""
+          },
+          "legendFormat": "Send Errors",
+          "macro": {
+            "filter": ""
+          },
+          "options": {
+            "count": false,
+            "disableDataAlignment": false,
+            "showDisabledItems": false,
+            "skipEmptyValues": false,
+            "useTrends": "default",
+            "useZabbixValueMapping": false
+          },
+          "proxy": {
+            "filter": ""
+          },
+          "queryType": "0",
           "refId": "A",
-          "legendFormat": "Send Errors"
+          "resultFormat": "time_series",
+          "schema": 12,
+          "table": {
+            "skipEmptyValues": false
+          },
+          "tags": {
+            "filter": ""
+          },
+          "textFilter": "",
+          "trigger": {
+            "filter": ""
+          }
         }
       ],
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        },
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom"
-        }
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "",
-          "custom": {
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "spanNulls": false
-          }
-        },
-        "overrides": []
-      }
+      "title": "Zabbix Send Errors History",
+      "type": "timeseries"
     }
+  ],
+  "preload": false,
+  "refresh": "10s",
+  "schemaVersion": 42,
+  "tags": [
+    "esp32",
+    "iot",
+    "obd2"
   ],
   "templating": {
     "list": [
       {
-        "current": {},
+        "allowCustomValue": false,
+        "current": {
+          "text": "ESP32-UP",
+          "value": "ESP32-UP"
+        },
         "datasource": {
           "type": "alexanderzobnin-zabbix-datasource",
-          "uid": "${DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE}"
+          "uid": "ffk089lf2vfuof"
         },
         "definition": "",
-        "hide": 0,
-        "includeAll": false,
         "label": "Device",
-        "multi": false,
         "name": "host",
         "options": [],
         "query": {
-          "queryType": 1,
-          "group": {
-            "filter": "ESP32"
-          },
-          "host": {
-            "filter": ""
-          },
-          "application": {
-            "filter": ""
-          },
-          "item": {
-            "filter": ""
-          }
+          "application": "",
+          "group": "Smartthings",
+          "host": "/ESP32-.*/",
+          "item": "",
+          "itemTag": "",
+          "queryType": "host",
+          "showDisabledItems": false
         },
         "refresh": 1,
         "regex": "",
-        "sort": 1,
+        "regexApplyTo": "value",
         "type": "query"
       }
     ]
   },
-  "annotations": {
-    "list": []
+  "time": {
+    "from": "now-1h",
+    "to": "now"
   },
-  "links": [
-    {
-      "title": "OBD2 Vehicle Telemetry",
-      "url": "/d/obd2-vehicle-telemetry",
-      "icon": "external link",
-      "type": "link",
-      "targetBlank": false
-    }
-  ],
-  "__inputs__": [
-    {
-      "name": "DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE",
-      "label": "Zabbix Datasource",
-      "description": "Select the Zabbix datasource to use for this dashboard.",
-      "type": "datasource",
-      "pluginId": "alexanderzobnin-zabbix-datasource",
-      "pluginName": "Zabbix"
-    }
-  ],
-  "__requires__": [
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "8.0.0"
-    },
-    {
-      "type": "datasource",
-      "id": "alexanderzobnin-zabbix-datasource",
-      "name": "Zabbix",
-      "version": "4.2.0"
-    }
-  ]
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "ESP32 Self-Monitoring",
+  "uid": "esp32-self-monitoring",
+  "version": 2,
+  "weekStart": ""
 }
