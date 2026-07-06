@@ -3,13 +3,13 @@
         "version": "7.0",
         "template_groups": [
             {
-                "uuid": "a571c0d144b14fd4a87a9d9b2aa9fcd6",
+                "uuid": "268c5b3c9710469e841443fa2be502e6",
                 "name": "Templates/IoT"
             }
         ],
         "templates": [
             {
-                "uuid": "3b2c1a9d4e8f7c6b5a4d3e2f1c0b9a87",
+                "uuid": "6b2015ff917b4e1bb3c5b823c2efe945",
                 "template": "ESP32 Self-Monitoring",
                 "name": "ESP32 Self-Monitoring",
                 "description": "Monitors internal health metrics of an ESP32 microcontroller running the zabbix-obd2 firmware.\n\nMetrics are sent via Zabbix Trapper every 10 seconds by the firmware itself.\n\nKeys collected:\n  esp32.heap.free       - Free heap memory (bytes)\n  esp32.heap.total      - Total heap size (bytes)\n  esp32.heap.min_free   - Minimum free heap since boot (bytes)\n  esp32.heap.max_alloc  - Largest contiguous allocatable block (bytes)\n  esp32.heap.used_pct   - Heap used percentage (%)\n  esp32.wifi.rssi       - Wi-Fi signal strength (dBm)\n  esp32.wifi.channel    - Wi-Fi channel\n  esp32.uptime          - Device uptime (seconds)\n  esp32.cpu.freq        - CPU frequency (MHz)\n  esp32.tasks           - Number of active FreeRTOS tasks\n  esp32.chip.temp       - Internal chip temperature (°C)\n  esp32.reset_reason    - Last reset reason code (esp_reset_reason_t)",
@@ -20,7 +20,7 @@
                 ],
                 "items": [
                     {
-                        "uuid": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4",
+                        "uuid": "a0861e279be8484bbb5d1b8a7e7fd244",
                         "name": "Heap Free",
                         "type": "TRAP",
                         "key": "esp32.heap.free",
@@ -29,24 +29,33 @@
                         "units": "B",
                         "description": "Amount of free heap memory available to the firmware (bytes).",
                         "tags": [
-                            {"tag": "component", "value": "memory"},
-                            {"tag": "device", "value": "esp32"}
+                            {
+                                "tag": "component",
+                                "value": "memory"
+                            },
+                            {
+                                "tag": "device",
+                                "value": "esp32"
+                            }
                         ],
                         "triggers": [
                             {
-                                "uuid": "b1c2d3e4f5a6b1c2d3e4f5a6b1c2d3e4",
+                                "uuid": "0f301d4e60594880b49331a5840a25e6",
                                 "expression": "last(/ESP32 Self-Monitoring/esp32.heap.free)<{$ESP32.HEAP.FREE.MIN}",
                                 "name": "ESP32 heap critically low ({ITEM.LASTVALUE})",
                                 "priority": "HIGH",
                                 "description": "Free heap dropped below the minimum safe threshold. The firmware may crash soon due to memory exhaustion.",
                                 "tags": [
-                                    {"tag": "scope", "value": "availability"}
+                                    {
+                                        "tag": "scope",
+                                        "value": "availability"
+                                    }
                                 ]
                             }
                         ]
                     },
                     {
-                        "uuid": "b2c3d4e5f6a7b2c3d4e5f6a7b2c3d4e5",
+                        "uuid": "3d6c13c17285419381611f213232d497",
                         "name": "Heap Total",
                         "type": "TRAP",
                         "key": "esp32.heap.total",
@@ -55,12 +64,18 @@
                         "units": "B",
                         "description": "Total heap size available to the firmware (bytes). Constant after boot.",
                         "tags": [
-                            {"tag": "component", "value": "memory"},
-                            {"tag": "device", "value": "esp32"}
+                            {
+                                "tag": "component",
+                                "value": "memory"
+                            },
+                            {
+                                "tag": "device",
+                                "value": "esp32"
+                            }
                         ]
                     },
                     {
-                        "uuid": "c3d4e5f6a7b8c3d4e5f6a7b8c3d4e5f6",
+                        "uuid": "037302455e144fb3a544708fbe50f3d4",
                         "name": "Heap Min Free (since boot)",
                         "type": "TRAP",
                         "key": "esp32.heap.min_free",
@@ -69,12 +84,18 @@
                         "units": "B",
                         "description": "The lowest value that free heap has ever reached since the last boot. Useful for detecting memory pressure over time.",
                         "tags": [
-                            {"tag": "component", "value": "memory"},
-                            {"tag": "device", "value": "esp32"}
+                            {
+                                "tag": "component",
+                                "value": "memory"
+                            },
+                            {
+                                "tag": "device",
+                                "value": "esp32"
+                            }
                         ]
                     },
                     {
-                        "uuid": "d4e5f6a7b8c9d4e5f6a7b8c9d4e5f6a7",
+                        "uuid": "68e003d38cd044cd920281c834e3525e",
                         "name": "Heap Max Allocatable Block",
                         "type": "TRAP",
                         "key": "esp32.heap.max_alloc",
@@ -83,12 +104,18 @@
                         "units": "B",
                         "description": "Largest single contiguous block that can be allocated from heap. Indicates heap fragmentation when much lower than esp32.heap.free.",
                         "tags": [
-                            {"tag": "component", "value": "memory"},
-                            {"tag": "device", "value": "esp32"}
+                            {
+                                "tag": "component",
+                                "value": "memory"
+                            },
+                            {
+                                "tag": "device",
+                                "value": "esp32"
+                            }
                         ]
                     },
                     {
-                        "uuid": "e5f6a7b8c9d0e5f6a7b8c9d0e5f6a7b8",
+                        "uuid": "1ca1a4679f0d4bcfa06d81b7f91bc7fb",
                         "name": "Heap Used",
                         "type": "TRAP",
                         "key": "esp32.heap.used_pct",
@@ -97,24 +124,33 @@
                         "units": "%",
                         "description": "Percentage of heap memory currently in use. Calculated by the firmware as 100 * (1 - free/total).",
                         "tags": [
-                            {"tag": "component", "value": "memory"},
-                            {"tag": "device", "value": "esp32"}
+                            {
+                                "tag": "component",
+                                "value": "memory"
+                            },
+                            {
+                                "tag": "device",
+                                "value": "esp32"
+                            }
                         ],
                         "triggers": [
                             {
-                                "uuid": "f6a7b8c9d0e1f6a7b8c9d0e1f6a7b8c9",
+                                "uuid": "ae5af8f3a4b64329b174e6af9dbcf7ae",
                                 "expression": "last(/ESP32 Self-Monitoring/esp32.heap.used_pct)>{$ESP32.HEAP.USED.HIGH}",
                                 "name": "ESP32 heap usage high ({ITEM.LASTVALUE})",
                                 "priority": "WARNING",
                                 "description": "Heap usage exceeded the warning threshold.",
                                 "tags": [
-                                    {"tag": "scope", "value": "capacity"}
+                                    {
+                                        "tag": "scope",
+                                        "value": "capacity"
+                                    }
                                 ]
                             }
                         ]
                     },
                     {
-                        "uuid": "f7a8b9c0d1e2f7a8b9c0d1e2f7a8b9c0",
+                        "uuid": "3fea6be4f5664bdf82fc280ef7ec122e",
                         "name": "Wi-Fi Signal (RSSI)",
                         "type": "TRAP",
                         "key": "esp32.wifi.rssi",
@@ -123,24 +159,33 @@
                         "units": "dBm",
                         "description": "Wi-Fi received signal strength indicator. Values closer to 0 dBm indicate a stronger signal.\nTypical ranges:\n  -30 to -50 dBm = Excellent\n  -50 to -65 dBm = Good\n  -65 to -75 dBm = Fair\n  -75 to -90 dBm = Weak",
                         "tags": [
-                            {"tag": "component", "value": "network"},
-                            {"tag": "device", "value": "esp32"}
+                            {
+                                "tag": "component",
+                                "value": "network"
+                            },
+                            {
+                                "tag": "device",
+                                "value": "esp32"
+                            }
                         ],
                         "triggers": [
                             {
-                                "uuid": "a8b9c0d1e2f3a8b9c0d1e2f3a8b9c0d1",
+                                "uuid": "bf6b38fcf253495b942e4f3b09f88698",
                                 "expression": "last(/ESP32 Self-Monitoring/esp32.wifi.rssi)<{$ESP32.WIFI.RSSI.MIN}",
                                 "name": "ESP32 Wi-Fi signal weak ({ITEM.LASTVALUE} dBm)",
                                 "priority": "WARNING",
                                 "description": "Wi-Fi signal strength dropped below the threshold. Data delivery to Zabbix may be unreliable.",
                                 "tags": [
-                                    {"tag": "scope", "value": "availability"}
+                                    {
+                                        "tag": "scope",
+                                        "value": "availability"
+                                    }
                                 ]
                             }
                         ]
                     },
                     {
-                        "uuid": "b9c0d1e2f3a4b9c0d1e2f3a4b9c0d1e2",
+                        "uuid": "93088d8af5ba4b86bb5b5f3ec408530a",
                         "name": "Wi-Fi Channel",
                         "type": "TRAP",
                         "key": "esp32.wifi.channel",
@@ -148,12 +193,18 @@
                         "value_type": "UNSIGNED",
                         "description": "Wi-Fi channel currently in use.",
                         "tags": [
-                            {"tag": "component", "value": "network"},
-                            {"tag": "device", "value": "esp32"}
+                            {
+                                "tag": "component",
+                                "value": "network"
+                            },
+                            {
+                                "tag": "device",
+                                "value": "esp32"
+                            }
                         ]
                     },
                     {
-                        "uuid": "c0d1e2f3a4b5c0d1e2f3a4b5c0d1e2f3",
+                        "uuid": "633787377a4b4142a282469d51880b9a",
                         "name": "Uptime",
                         "type": "TRAP",
                         "key": "esp32.uptime",
@@ -162,24 +213,33 @@
                         "units": "s",
                         "description": "Time elapsed since the ESP32 last booted, in seconds.",
                         "tags": [
-                            {"tag": "component", "value": "system"},
-                            {"tag": "device", "value": "esp32"}
+                            {
+                                "tag": "component",
+                                "value": "system"
+                            },
+                            {
+                                "tag": "device",
+                                "value": "esp32"
+                            }
                         ],
                         "triggers": [
                             {
-                                "uuid": "d1e2f3a4b5c6d1e2f3a4b5c6d1e2f3a4",
+                                "uuid": "9f0a80a089814065ab6737e9690975af",
                                 "expression": "change(/ESP32 Self-Monitoring/esp32.uptime)<0",
                                 "name": "ESP32 rebooted (uptime reset detected)",
                                 "priority": "WARNING",
                                 "description": "The uptime counter decreased, indicating the ESP32 was rebooted. Check esp32.reset_reason for the cause.",
                                 "tags": [
-                                    {"tag": "scope", "value": "availability"}
+                                    {
+                                        "tag": "scope",
+                                        "value": "availability"
+                                    }
                                 ]
                             }
                         ]
                     },
                     {
-                        "uuid": "e2f3a4b5c6d7e2f3a4b5c6d7e2f3a4b5",
+                        "uuid": "74b15bc211c9468cbef9c54545df7216",
                         "name": "CPU Frequency",
                         "type": "TRAP",
                         "key": "esp32.cpu.freq",
@@ -188,12 +248,18 @@
                         "units": "MHz",
                         "description": "Current CPU clock frequency. Typically 240 MHz on ESP32 WROOM-32.",
                         "tags": [
-                            {"tag": "component", "value": "cpu"},
-                            {"tag": "device", "value": "esp32"}
+                            {
+                                "tag": "component",
+                                "value": "cpu"
+                            },
+                            {
+                                "tag": "device",
+                                "value": "esp32"
+                            }
                         ]
                     },
                     {
-                        "uuid": "f3a4b5c6d7e8f3a4b5c6d7e8f3a4b5c6",
+                        "uuid": "ffadabf6868b4361be4560c1adce1fdf",
                         "name": "FreeRTOS Task Count",
                         "type": "TRAP",
                         "key": "esp32.tasks",
@@ -201,12 +267,18 @@
                         "value_type": "UNSIGNED",
                         "description": "Number of active FreeRTOS tasks currently running on the ESP32.",
                         "tags": [
-                            {"tag": "component", "value": "rtos"},
-                            {"tag": "device", "value": "esp32"}
+                            {
+                                "tag": "component",
+                                "value": "rtos"
+                            },
+                            {
+                                "tag": "device",
+                                "value": "esp32"
+                            }
                         ]
                     },
                     {
-                        "uuid": "a4b5c6d7e8f9a4b5c6d7e8f9a4b5c6d7",
+                        "uuid": "63c9da0c978b497e915ca991f8b00115",
                         "name": "Internal Chip Temperature",
                         "type": "TRAP",
                         "key": "esp32.chip.temp",
@@ -215,24 +287,33 @@
                         "units": "°C",
                         "description": "Internal temperature sensor of the ESP32 chip. Note: this sensor has low accuracy (±5°C) and measures die temperature, not ambient.",
                         "tags": [
-                            {"tag": "component", "value": "thermal"},
-                            {"tag": "device", "value": "esp32"}
+                            {
+                                "tag": "component",
+                                "value": "thermal"
+                            },
+                            {
+                                "tag": "device",
+                                "value": "esp32"
+                            }
                         ],
                         "triggers": [
                             {
-                                "uuid": "b5c6d7e8f9a0b5c6d7e8f9a0b5c6d7e8",
+                                "uuid": "d3e2b10546e840da815bc5e189562c86",
                                 "expression": "last(/ESP32 Self-Monitoring/esp32.chip.temp)>{$ESP32.TEMP.HIGH}",
                                 "name": "ESP32 chip temperature high ({ITEM.LASTVALUE}°C)",
                                 "priority": "WARNING",
                                 "description": "ESP32 internal die temperature exceeded the warning threshold. Consider improving ventilation around the board.",
                                 "tags": [
-                                    {"tag": "scope", "value": "availability"}
+                                    {
+                                        "tag": "scope",
+                                        "value": "availability"
+                                    }
                                 ]
                             }
                         ]
                     },
                     {
-                        "uuid": "c6d7e8f9a0b1c6d7e8f9a0b1c6d7e8f9",
+                        "uuid": "78f4c6c7a72046d288a5b178a51fcccf",
                         "name": "Last Reset Reason",
                         "type": "TRAP",
                         "key": "esp32.reset_reason",
@@ -240,18 +321,27 @@
                         "value_type": "UNSIGNED",
                         "description": "Numeric code of the last reset reason (esp_reset_reason_t):\n  1 = Power-on reset\n  2 = External pin reset\n  3 = Software reset (ESP.restart())\n  4 = Exception / panic\n  5 = Interrupt watchdog\n  6 = Task watchdog\n  7 = Other watchdog\n  8 = Brownout (low voltage)\n  9 = SDIO reset",
                         "tags": [
-                            {"tag": "component", "value": "system"},
-                            {"tag": "device", "value": "esp32"}
+                            {
+                                "tag": "component",
+                                "value": "system"
+                            },
+                            {
+                                "tag": "device",
+                                "value": "esp32"
+                            }
                         ],
                         "triggers": [
                             {
-                                "uuid": "d7e8f9a0b1c2d7e8f9a0b1c2d7e8f9a0",
+                                "uuid": "f72decded35e4104822c99988de03d50",
                                 "expression": "last(/ESP32 Self-Monitoring/esp32.reset_reason)=4 or last(/ESP32 Self-Monitoring/esp32.reset_reason)=5 or last(/ESP32 Self-Monitoring/esp32.reset_reason)=6 or last(/ESP32 Self-Monitoring/esp32.reset_reason)=8",
                                 "name": "ESP32 rebooted due to fault (reason={ITEM.LASTVALUE})",
                                 "priority": "HIGH",
                                 "description": "The ESP32 rebooted due to a fault condition: panic/exception (4), interrupt watchdog (5), task watchdog (6), or brownout (8).",
                                 "tags": [
-                                    {"tag": "scope", "value": "availability"}
+                                    {
+                                        "tag": "scope",
+                                        "value": "availability"
+                                    }
                                 ]
                             }
                         ]
