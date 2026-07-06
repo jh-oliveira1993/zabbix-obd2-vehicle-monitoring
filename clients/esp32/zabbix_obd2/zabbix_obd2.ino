@@ -19,9 +19,11 @@ WiFiClient client;
 // 0 = Searching Wi-Fi, 1 = Searching BT, 2 = Connected, 3 = Transmitting
 volatile int appState = 0; 
 
-// Discovery and polling intervals
+// Discovery, polling and monitor intervals
 unsigned long lastDiscoveryTime = 0;
+unsigned long lastMonitorTime   = 0;
 const unsigned long DISCOVERY_INTERVAL = 3600000; // 1 hour in ms
+const unsigned long MONITOR_INTERVAL   = 10000;   // 10 seconds in ms
 
 struct PIDDef {
   byte pid;
@@ -79,7 +81,8 @@ void initOBD2();
 String sendCommand(String cmd);
 void discoverPIDs();
 void sendZabbixLLD();
-void sendZabbixBatch(String payloadJson);
+void sendZabbixBatch(String payloadJson, const char* host);
+void collectAndSendMonitorMetrics();
 float queryAndParsePID(byte pid);
 
 // FreeRTOS Task for Asynchronous LED Blinking (Runs on Core 0)
@@ -155,7 +158,7 @@ void loop() {
       isDiscoveryDone = true;
     }
     
-    // Polling Phase
+    // Polling Phase: OBD2 metrics -> ZABBIX_HOST
     if (numActivePIDs > 0) {
       String batchPayload = "{\"request\":\"sender data\",\"data\":[";
       batchPayload.reserve(4096);
@@ -178,8 +181,14 @@ void loop() {
       
       if (successfulReads > 0) {
         appState = 3; // Transmitting
-        sendZabbixBatch(batchPayload);
+        sendZabbixBatch(batchPayload, ZABBIX_HOST);
       }
+    }
+
+    // Self-monitoring Phase: ESP32 metrics -> ZABBIX_MONITOR_HOST (every 10s)
+    if (now - lastMonitorTime >= MONITOR_INTERVAL) {
+      collectAndSendMonitorMetrics();
+      lastMonitorTime = now;
     }
     
     Serial.println("----------------------------------------");
@@ -342,10 +351,60 @@ void sendZabbixLLD() {
   batchPayload = "{\"request\":\"sender data\",\"data\":[{\"host\":\"" + String(ZABBIX_HOST) + "\",\"key\":\"obd.discovery\",\"value\":\"" + lldValue + "\"}]}";
   
   Serial.println("Sending LLD Discovery to Zabbix...");
-  sendZabbixBatch(batchPayload);
+  sendZabbixBatch(batchPayload, ZABBIX_HOST);
 }
 
-void sendZabbixBatch(String payloadJson) {
+// ------------------------------------------
+// FUNCTION: collectAndSendMonitorMetrics
+// Collects ESP32 internal health metrics and
+// sends them to the ZABBIX_MONITOR_HOST.
+// ------------------------------------------
+void collectAndSendMonitorMetrics() {
+  Serial.println("[MONITOR] Collecting ESP32 self-monitoring metrics...");
+
+  uint32_t heapFree    = ESP.getFreeHeap();
+  uint32_t heapTotal   = ESP.getHeapSize();
+  uint32_t heapMinFree = ESP.getMinFreeHeap();
+  uint32_t heapMaxAlloc = ESP.getMaxAllocHeap();
+  float    heapUsedPct = 100.0 * (1.0 - ((float)heapFree / (float)heapTotal));
+  int32_t  rssi        = WiFi.RSSI();
+  int32_t  channel     = WiFi.channel();
+  uint32_t uptime      = millis() / 1000;
+  uint32_t cpuFreq     = ESP.getCpuFreqMHz();
+  uint32_t taskCount   = uxTaskGetNumberOfTasks();
+  float    chipTemp    = temperatureRead();
+  int      resetReason = (int)esp_reset_reason();
+
+  Serial.printf("  Heap Free:     %u bytes (%.1f%% used)\n", heapFree, heapUsedPct);
+  Serial.printf("  Heap Min Free: %u bytes\n", heapMinFree);
+  Serial.printf("  Wi-Fi RSSI:    %d dBm  (Ch %d)\n", rssi, channel);
+  Serial.printf("  Uptime:        %u s\n", uptime);
+  Serial.printf("  CPU Freq:      %u MHz\n", cpuFreq);
+  Serial.printf("  FreeRTOS Tasks: %u\n", taskCount);
+  Serial.printf("  Chip Temp:     %.1f C\n", chipTemp);
+
+  String h = String(ZABBIX_MONITOR_HOST);
+  String payload;
+  payload.reserve(1024);
+  payload  = "{\"request\":\"sender data\",\"data\":[";
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.heap.free\",\"value\":\""       + String(heapFree)     + "\"},";
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.heap.total\",\"value\":\""      + String(heapTotal)    + "\"},";
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.heap.min_free\",\"value\":\""  + String(heapMinFree)  + "\"},";
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.heap.max_alloc\",\"value\":\"" + String(heapMaxAlloc) + "\"},";
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.heap.used_pct\",\"value\":\""  + String(heapUsedPct, 1) + "\"},";
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.wifi.rssi\",\"value\":\""      + String(rssi)         + "\"},";
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.wifi.channel\",\"value\":\""   + String(channel)      + "\"},";
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.uptime\",\"value\":\""          + String(uptime)       + "\"},";
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.cpu.freq\",\"value\":\""        + String(cpuFreq)      + "\"},";
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.tasks\",\"value\":\""           + String(taskCount)    + "\"},";
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.chip.temp\",\"value\":\""      + String(chipTemp, 1)  + "\"},";
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.reset_reason\",\"value\":\""   + String(resetReason)  + "\"}";
+  payload += "]}";
+
+  sendZabbixBatch(payload, ZABBIX_MONITOR_HOST);
+}
+
+void sendZabbixBatch(String payloadJson, const char* host) {
   if (!client.connect(ZABBIX_SERVER, ZABBIX_PORT)) {
     Serial.println("[ERROR] TCP connection to Zabbix failed.");
     return;
