@@ -19,7 +19,8 @@ A lightweight suite of tools (Python daemon and ESP32 C++ firmware) and a Zabbix
   - Total Fuel Trim (Short Term + Long Term).
 - **ESP32 Dual-Core Architecture:** The C++ firmware utilizes FreeRTOS to run connection handling and data parsing on Core 1, while providing highly responsive visual LED status feedback on Core 0.
 - **Auto-Recovery:** Built-in smart reconnection logic handles Bluetooth disconnects or Wi-Fi drops transparently in both clients.
-- **Grafana Dashboard:** A ready-to-import Grafana dashboard (`grafana/OBD2-Vehicle-Telemetry.json`) built on top of the [Zabbix datasource plugin](https://grafana.com/grafana/plugins/alexanderzobnin-zabbix-datasource/) with panels for all major metrics, organized by category (Engine, Speed, Fuel, Air Intake, Electrical, O2 Sensors) and a vehicle selector variable.
+- **ESP32 Self-Monitoring:** The ESP32 firmware includes extensive self-monitoring capabilities (independent of the OBD2 connection), reporting internal metrics like Free Heap, PSRAM, Flash Space (for OTA), CPU frequency, Uptime, Wi-Fi RSSI, and OBD2 Application Health (failed reads, reconnect counts).
+- **Grafana Dashboards:** Ready-to-import Grafana dashboards built on top of the [Zabbix datasource plugin](https://grafana.com/grafana/plugins/alexanderzobnin-zabbix-datasource/). Includes `grafana/OBD2-Vehicle-Telemetry.json` for vehicle telemetry and `grafana/ESP32-Self-Monitoring.json` for ESP32 hardware health.
 
 ## Architecture
 
@@ -54,9 +55,11 @@ A dedicated, headless hardware solution. The ESP32 connects directly to the ELM3
 zabbix-obd2-vehicle-monitoring/
 ├── README.md
 ├── zabbix/
-│   └── generic_telemetry_by_obd2.json # Universal Zabbix 7.0 template
+│   ├── generic_telemetry_by_obd2.json # Universal Zabbix 7.0 template (Vehicle Data)
+│   └── esp32_self_monitoring.json     # Zabbix 7.0 template (ESP32 Health Data)
 ├── grafana/
-│   └── OBD2-Vehicle-Telemetry.json    # Grafana dashboard (importable)
+│   ├── OBD2-Vehicle-Telemetry.json    # Grafana dashboard for vehicle metrics
+│   └── ESP32-Self-Monitoring.json     # Grafana dashboard for ESP32 hardware health
 └── clients/
     ├── python-termux/        # Python telemetry collector daemon for smartphones
     │   ├── telemetry.py
@@ -90,8 +93,10 @@ zabbix-obd2-vehicle-monitoring/
 ### 1. Zabbix Template Configuration
 1. Go to Zabbix Web UI -> **Configuration** -> **Templates** -> **Import**.
 2. Upload `zabbix/generic_telemetry_by_obd2.json`.
-3. Create a Host for your vehicle (e.g., `My Vehicle`) and link the template to it.
-4. Go to the Host's **Macros** tab to configure your engine parameters:
+3. *(Optional)* If using the ESP32, also upload `zabbix/esp32_self_monitoring.json`.
+4. Create a Host for your vehicle (e.g., `My Vehicle`) and link the `Generic Telemetry by OBD2` template to it.
+5. *(Optional)* Create a secondary Host for your ESP32 hardware (e.g., `ESP32-UP`) and link the `ESP32 Self-Monitoring` template to it.
+6. Go to the Vehicle Host's **Macros** tab to configure your engine parameters:
    - `{$OBD.ENGINE.DISPLACEMENT}`: Engine size in liters (default: `1.0`).
    - `{$OBD.ENGINE.VE}`: Volumetric Efficiency (default: `0.80`).
 
@@ -115,7 +120,8 @@ python3 telemetry.py
 1. Open `clients/esp32/zabbix_obd2/zabbix_obd2.ino` in the Arduino IDE.
 2. Edit the **GENERAL SETTINGS** block at the top of the file:
    - Update `WIFI_SSID` and `WIFI_PASS` (must be a 2.4GHz network).
-   - Update `ZABBIX_SERVER` and `ZABBIX_HOST` (ensure the host matches your Zabbix Hostname exactly).
+   - Update `ZABBIX_SERVER` and `ZABBIX_HOST` (ensure the host matches your Vehicle Zabbix Hostname exactly).
+   - Update `ZABBIX_MONITOR_HOST` (ensure the host matches your ESP32 Hardware Zabbix Hostname exactly).
    - Update `ELM327_MAC_BYTES` with your adapter's MAC address in hex format (e.g., `{0x01, 0x23, 0x45, 0x67, 0x89, 0xBA}`).
 3. Install the **ArduinoJson** library via the Library Manager.
 4. In the Arduino IDE, go to **Tools -> Partition Scheme** and select **Huge APP (3MB No OTA/1MB SPIFFS)**. This is mandatory as both the Wi-Fi and Bluetooth Classic stacks are very large.
@@ -139,20 +145,26 @@ When using a smartphone hotspot as the network transport, data consumption is mi
 
 Any standard mobile data plan handles this comfortably without noticeable impact on the data allowance.
 
-### 4. Grafana Dashboard (Optional)
+### 4. Grafana Dashboards (Optional)
 1. In Grafana, go to **Dashboards** -> **Import**.
-2. Upload `grafana/OBD2-Vehicle-Telemetry.json`.
+2. Upload `grafana/OBD2-Vehicle-Telemetry.json` and/or `grafana/ESP32-Self-Monitoring.json`.
 3. On the import screen, select your Zabbix datasource in the **datasource** dropdown.
 4. Click **Import**.
-5. Use the **Vehicle** dropdown at the top of the dashboard to select which host to display.
+5. Use the variables dropdown at the top of the dashboards to select which host to display.
 
-The dashboard includes the following panel sections:
+#### Vehicle Telemetry Dashboard panels:
 - **Engine:** RPM and Engine Load gauges + RPM/Coolant history graph.
 - **Speed & Throttle:** Speed gauge + Speed, Throttle, and Accelerator history graph.
 - **Fuel System:** Fuel Level bar gauge, Fuel Consumption Rate and Fuel Economy stat panels, and a Fuel Trims (STFT/LTFT) history graph.
 - **Air Intake & Pressure:** Manifold and Barometric pressure + Intake Air Temp history graph, and a Thermal Overview (Coolant / Catalyst / Ambient) graph.
 - **Electrical System:** Battery Voltage gauge + Battery Voltage history graph with a low-voltage threshold line.
 - **O2 Sensors (Lambda):** B1S1 and B1S2 upstream/downstream sensor voltage history graph.
+
+#### ESP32 Self-Monitoring Dashboard panels:
+- **Memory (Heap):** Current usage and history (Free, Min Free, Max Allocatable Block), plus PSRAM stats.
+- **Flash Storage:** Current sketch size, total capacity, and free space available for OTA updates.
+- **System:** Uptime, CPU Frequency, RTOS Tasks, Chip Temperature, Reset Reason, and Wi-Fi RSSI history.
+- **OBD2 Application Health:** Bluetooth connection status, active PIDs count, and history graphs tracking failed PID reads, connection reconnects, and Zabbix TCP send errors.
 
 ## License
 This project is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0) - see the LICENSE file for details.
