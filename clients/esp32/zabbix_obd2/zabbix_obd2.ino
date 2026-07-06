@@ -146,10 +146,20 @@ void setup() {
 }
 
 void loop() {
+  unsigned long now = millis();
+
+  // ── Self-monitoring: roda sempre que o Wi-Fi estiver disponível ──────────
+  // Independe da conexão Bluetooth com o ELM327. Permite monitorar a saúde
+  // do ESP32 mesmo quando o carro está desligado ou o adaptador indisponível.
+  if (WiFi.status() == WL_CONNECTED && now - lastMonitorTime >= MONITOR_INTERVAL) {
+    collectAndSendMonitorMetrics();
+    lastMonitorTime = now;
+  }
+
+  // ── OBD2: requer Wi-Fi + Bluetooth (ELM327) ativos simultaneamente ───────
   if (SerialBT.connected() && WiFi.status() == WL_CONNECTED) {
     appState = 2;
-    unsigned long now = millis();
-    
+
     // Perform discovery if not done, or if 1 hour has passed
     if (!isDiscoveryDone || (now - lastDiscoveryTime >= DISCOVERY_INTERVAL)) {
       discoverPIDs();
@@ -185,12 +195,6 @@ void loop() {
       }
     }
 
-    // Self-monitoring Phase: ESP32 metrics -> ZABBIX_MONITOR_HOST (every 10s)
-    if (now - lastMonitorTime >= MONITOR_INTERVAL) {
-      collectAndSendMonitorMetrics();
-      lastMonitorTime = now;
-    }
-    
     Serial.println("----------------------------------------");
     delay(1000); // Wait 1 second before next polling cycle (matches 1Hz python script)
     
