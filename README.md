@@ -137,13 +137,13 @@ The firmware uses FreeRTOS to provide non-blocking visual feedback via the built
 - **Brief OFF Blink:** Data successfully transmitted to Zabbix.
 
 #### ESP32 Mobile Data Usage
-When using a smartphone hotspot as the network transport, data consumption is minimal. Based on a 30-PID telemetry payload (~2KB) sent at 1Hz plus TCP/IP overhead:
+When using a smartphone hotspot as the network transport, data consumption is minimal. Based on a 30-PID telemetry payload (~2KB) sent at 1Hz, plus the optional Self-Monitoring payload (~2KB) sent every 10 seconds:
 
-| Period | Estimated Consumption |
-|---|---|
-| Per hour of vehicle use | ~10 MB |
-| Per month (1h/day, 22 working days) | ~220 MB |
-| Per month (1h/day, 30 days) | ~300 MB |
+| Period | Base (Telemetry Only) | With Self-Monitoring ON |
+|---|---|---|
+| Per hour of vehicle use | ~10 MB | ~11 MB |
+| Per month (1h/day, 22 working days) | ~220 MB | ~242 MB |
+| Per month (1h/day, 30 days) | ~300 MB | ~330 MB |
 
 Any standard mobile data plan handles this comfortably without noticeable impact on the data allowance.
 
