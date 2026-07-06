@@ -119,7 +119,7 @@
                         "type": "TRAP",
                         "key": "esp32.wifi.rssi",
                         "delay": "0",
-                        "value_type": "INTEGER",
+                        "value_type": "FLOAT",
                         "units": "dBm",
                         "description": "Wi-Fi received signal strength indicator. Values closer to 0 dBm indicate a stronger signal.\nTypical ranges:\n  -30 to -50 dBm = Excellent\n  -50 to -65 dBm = Good\n  -65 to -75 dBm = Fair\n  -75 to -90 dBm = Weak",
                         "tags": [
