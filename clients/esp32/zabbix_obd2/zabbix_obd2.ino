@@ -148,15 +148,15 @@ void setup() {
 void loop() {
   unsigned long now = millis();
 
-  // ── Self-monitoring: roda sempre que o Wi-Fi estiver disponível ──────────
-  // Independe da conexão Bluetooth com o ELM327. Permite monitorar a saúde
-  // do ESP32 mesmo quando o carro está desligado ou o adaptador indisponível.
+  // ── Self-monitoring: runs whenever Wi-Fi is available ────────────────────
+  // Independent of the Bluetooth connection to the ELM327. Allows monitoring
+  // the ESP32 health even when the vehicle is off or the adapter is absent.
   if (WiFi.status() == WL_CONNECTED && now - lastMonitorTime >= MONITOR_INTERVAL) {
     collectAndSendMonitorMetrics();
     lastMonitorTime = now;
   }
 
-  // ── OBD2: requer Wi-Fi + Bluetooth (ELM327) ativos simultaneamente ───────
+  // ── OBD2: requires both Wi-Fi and Bluetooth (ELM327) to be active ────────
   if (SerialBT.connected() && WiFi.status() == WL_CONNECTED) {
     appState = 2;
 
