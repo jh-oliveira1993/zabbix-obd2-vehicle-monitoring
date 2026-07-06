@@ -423,16 +423,16 @@ void sendZabbixBatch(String payloadJson, const char* host) {
 
   client.write(header, 13);
   
-  // Enviar o JSON em pedaços para evitar estourar o buffer do LWIP (TCP Fragmentation)
+  // Send JSON in chunks to avoid overflowing the LWIP buffer (TCP Fragmentation)
   int bytesSent = 0;
   int totalBytes = payloadJson.length();
   const char* payloadPtr = payloadJson.c_str();
   
   Serial.printf("Sending %d bytes...\n", totalBytes);
   
-  // Desabilitar o algoritmo de Nagle para forçar o envio imediato de cada chunk
-  // Isso previne "TCP MTU Black Holes" na rede 4G do celular, onde pacotes maiores
-  // que o MTU da rede móvel (~1420 bytes) são descartados silenciosamente.
+  // Disable Nagle's algorithm to force immediate delivery of each chunk.
+  // This prevents "TCP MTU Black Holes" on 4G mobile networks, where packets
+  // larger than the mobile MTU (~1420 bytes) are silently dropped.
   client.setNoDelay(true);
   
   while(bytesSent < totalBytes) {
@@ -444,10 +444,10 @@ void sendZabbixBatch(String payloadJson, const char* host) {
     if (chunk > 256) chunk = 256;
     int written = client.write((const uint8_t*)(payloadPtr + bytesSent), chunk);
     if (written > 0) {
-      client.flush(); // Forçar o envio imediato e aguardar ACK
+      client.flush(); // Force immediate send and wait for ACK
       bytesSent += written;
     } else {
-      delay(10); // Esperar o buffer liberar
+      delay(10); // Wait for the buffer to drain
     }
   }
   Serial.printf("Sent %d / %d bytes.\n", bytesSent, totalBytes);
