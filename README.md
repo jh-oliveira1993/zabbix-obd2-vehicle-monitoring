@@ -4,6 +4,7 @@
 [![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/)
 [![C++ Version](https://img.shields.io/badge/C%2B%2B-ESP32-green.svg)](https://www.arduino.cc/)
 [![Zabbix Version](https://img.shields.io/badge/zabbix-7.0%2B-red.svg)](https://www.zabbix.com/)
+[![Grafana](https://img.shields.io/badge/grafana-dashboard-orange.svg)](https://grafana.com/)
 
 A lightweight suite of tools (Python daemon and ESP32 C++ firmware) and a Zabbix template designed to monitor real-time vehicle telemetry via OBD-II using an ELM327 Bluetooth adapter. It streams numeric and textual telemetry at 1Hz, and utilizes Zabbix calculated items to compute advanced metrics such as fuel consumption (km/L) and engine power.
 
@@ -18,6 +19,7 @@ A lightweight suite of tools (Python daemon and ESP32 C++ firmware) and a Zabbix
   - Total Fuel Trim (Short Term + Long Term).
 - **ESP32 Dual-Core Architecture:** The C++ firmware utilizes FreeRTOS to run connection handling and data parsing on Core 1, while providing highly responsive visual LED status feedback on Core 0.
 - **Auto-Recovery:** Built-in smart reconnection logic handles Bluetooth disconnects or Wi-Fi drops transparently in both clients.
+- **Grafana Dashboard:** A ready-to-import Grafana dashboard (`grafana/OBD2-Vehicle-Telemetry.json`) built on top of the [Zabbix datasource plugin](https://grafana.com/grafana/plugins/alexanderzobnin-zabbix-datasource/) with panels for all major metrics, organized by category (Engine, Speed, Fuel, Air Intake, Electrical, O2 Sensors) and a vehicle selector variable.
 
 ## Architecture
 
@@ -53,6 +55,8 @@ zabbix-obd2-vehicle-monitoring/
 ├── README.md
 ├── zabbix/
 │   └── generic_telemetry_by_obd2.json # Universal Zabbix 7.0 template
+├── grafana/
+│   └── OBD2-Vehicle-Telemetry.json    # Grafana dashboard (importable)
 └── clients/
     ├── python-termux/        # Python telemetry collector daemon for smartphones
     │   ├── telemetry.py
@@ -76,6 +80,10 @@ zabbix-obd2-vehicle-monitoring/
 - ESP32 Development Board (e.g., WROOM-32, NodeMCU-32S)
 - Arduino IDE (with ESP32 core `esp32:esp32` installed)
 - Smartphone with Wi-Fi Hotspot (2.4 GHz band enabled)
+
+### Grafana Dashboard (Optional)
+- **Grafana 10+**
+- [Zabbix datasource plugin](https://grafana.com/grafana/plugins/alexanderzobnin-zabbix-datasource/) (`alexanderzobnin-zabbix-datasource`) installed and configured
 
 ## Setup & Installation
 
@@ -119,6 +127,21 @@ The firmware uses FreeRTOS to provide non-blocking visual feedback via the built
 - **Strobe (3 ultra-fast blinks every 2s):** Wi-Fi connected, but searching for the ELM327 Bluetooth.
 - **Solid ON:** Fully connected to both Wi-Fi and the vehicle.
 - **Brief OFF Blink:** Data successfully transmitted to Zabbix.
+
+### 4. Grafana Dashboard (Optional)
+1. In Grafana, go to **Dashboards** -> **Import**.
+2. Upload `grafana/OBD2-Vehicle-Telemetry.json`.
+3. On the import screen, select your Zabbix datasource in the **datasource** dropdown.
+4. Click **Import**.
+5. Use the **Vehicle** dropdown at the top of the dashboard to select which host to display.
+
+The dashboard includes the following panel sections:
+- **Engine:** RPM and Engine Load gauges + RPM/Coolant history graph.
+- **Speed & Throttle:** Speed gauge + Speed, Throttle, and Accelerator history graph.
+- **Fuel System:** Fuel Level bar gauge, Fuel Consumption Rate and Fuel Economy stat panels, and a Fuel Trims (STFT/LTFT) history graph.
+- **Air Intake & Pressure:** Manifold and Barometric pressure + Intake Air Temp history graph, and a Thermal Overview (Coolant / Catalyst / Ambient) graph.
+- **Electrical System:** Battery Voltage gauge + Battery Voltage history graph with a low-voltage threshold line.
+- **O2 Sensors (Lambda):** B1S1 and B1S2 upstream/downstream sensor voltage history graph.
 
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
