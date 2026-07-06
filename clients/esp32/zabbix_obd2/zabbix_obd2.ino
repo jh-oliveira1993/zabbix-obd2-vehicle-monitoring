@@ -7,6 +7,9 @@
 // Built-in LED Pin (Usually GPIO 2 on generic ESP32 boards)
 #define LED_PIN 2
 
+// Set to false to disable ESP32 self-monitoring metrics (saves Flash/RAM)
+const bool ENABLE_SELF_MONITORING = true;
+
 #include "secrets.h"
 
 // ==========================================
@@ -156,7 +159,7 @@ void loop() {
   // ── Self-monitoring: runs whenever Wi-Fi is available ────────────────────
   // Independent of the Bluetooth connection to the ELM327. Allows monitoring
   // the ESP32 health even when the vehicle is off or the adapter is absent.
-  if (WiFi.status() == WL_CONNECTED && now - lastMonitorTime >= MONITOR_INTERVAL) {
+  if (ENABLE_SELF_MONITORING && WiFi.status() == WL_CONNECTED && now - lastMonitorTime >= MONITOR_INTERVAL) {
     collectAndSendMonitorMetrics();
     lastMonitorTime = now;
   }
