@@ -1731,5 +1731,29 @@
       "type": "link",
       "targetBlank": false
     }
+  ],
+  "__inputs__": [
+    {
+      "name": "DS_ALEXANDERZOBNIN-ZABBIX-DATASOURCE",
+      "label": "Zabbix Datasource",
+      "description": "Select the Zabbix datasource to use for this dashboard.",
+      "type": "datasource",
+      "pluginId": "alexanderzobnin-zabbix-datasource",
+      "pluginName": "Zabbix"
+    }
+  ],
+  "__requires__": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "8.0.0"
+    },
+    {
+      "type": "datasource",
+      "id": "alexanderzobnin-zabbix-datasource",
+      "name": "Zabbix",
+      "version": "4.2.0"
+    }
   ]
 }
