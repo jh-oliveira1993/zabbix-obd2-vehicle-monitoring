@@ -1,6 +1,6 @@
 # zabbix-obd2-vehicle-monitoring
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/)
 [![C++ Version](https://img.shields.io/badge/C%2B%2B-ESP32-green.svg)](https://www.arduino.cc/)
 [![Zabbix Version](https://img.shields.io/badge/zabbix-7.0%2B-red.svg)](https://www.zabbix.com/)
@@ -155,4 +155,4 @@ The dashboard includes the following panel sections:
 - **O2 Sensors (Lambda):** B1S1 and B1S2 upstream/downstream sensor voltage history graph.
 
 ## License
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0) - see the LICENSE file for details.
