@@ -7,7 +7,7 @@
 // Built-in LED Pin (Usually GPIO 2 on generic ESP32 boards)
 #define LED_PIN 2
 
-#include "secrets.h"
+#include "config.h"
 
 // ==========================================
 // GLOBAL VARIABLES

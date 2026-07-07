@@ -1,5 +1,5 @@
-#ifndef SECRETS_H
-#define SECRETS_H
+#ifndef CONFIG_H
+#define CONFIG_H
 
 #include <Arduino.h>
 
