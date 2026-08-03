@@ -254,6 +254,7 @@ void initOBD2() {
 String sendCommand(String cmd) {
   SerialBT.print(cmd + "\r");
   String response = "";
+  response.reserve(64);
   long timeout = millis() + 2000;
   
   while(millis() < timeout) {
