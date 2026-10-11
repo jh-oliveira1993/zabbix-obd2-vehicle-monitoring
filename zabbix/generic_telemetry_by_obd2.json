@@ -27,7 +27,7 @@
                         "delay": "10s",
                         "history": "180d",
                         "value_type": "FLOAT",
-                        "units": "\u00b0C",
+                        "units": "°C",
                         "params": "last(//obd[catalyst_temp_b1s1]) - last(//obd[coolant_temp])"
                     },
                     {
@@ -49,7 +49,7 @@
                         "delay": "10s",
                         "history": "180d",
                         "value_type": "FLOAT",
-                        "units": "\u00b0C",
+                        "units": "°C",
                         "params": "last(//obd[coolant_temp]) - last(//obd[ambiant_air_temp])"
                     },
                     {
@@ -139,7 +139,7 @@
                         "delay": "0",
                         "lifetime": "30d",
                         "enabled_lifetime_type": "DISABLE_NEVER",
-                        "description": "Automatically discovers all OBD2 PIDs supported by the ECU.\n\nThe telemetry.py script sends the discovery payload upon connection and every hour.\n\nAvailable macros:\n  {#OBD_KEY}  \u2014 key suffix (e.g. rpm, speed, coolant_temp)\n  {#OBD_NAME} \u2014 readable name (e.g. Engine RPM)\n  {#OBD_UNIT} \u2014 measurement unit (e.g. rpm, km/h, \u00b0C)",
+                        "description": "Automatically discovers all OBD2 PIDs supported by the ECU.\n\nThe telemetry.py script sends the discovery payload upon connection and every hour.\n\nAvailable macros:\n  {#OBD_KEY}  — key suffix (e.g. rpm, speed, coolant_temp)\n  {#OBD_NAME} — readable name (e.g. Engine RPM)\n  {#OBD_UNIT} — measurement unit (e.g. rpm, km/h, °C)",
                         "item_prototypes": [
                             {
                                 "uuid": "f83d8a5f9e274ecc919232b2ed634e73",
@@ -183,7 +183,8 @@
                                                 "tag": "type",
                                                 "value": "emission_monitor"
                                             }
-                                        ]
+                                        ],
+                                        "discover": "NO_DISCOVER"
                                     },
                                     {
                                         "uuid": "ebe09a9a8f7647c898b17c243f961a6b",
@@ -192,7 +193,7 @@
                                         "recovery_expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])<{$OBD.CATALYST.HIGH.RECOVERY}",
                                         "name": "Excessive catalyst temperature: {#OBD_NAME} ({ITEM.LASTVALUE})",
                                         "priority": "HIGH",
-                                        "description": "Catalyst temperature above {$OBD.CATALYST.HIGH} \u00b0C.\nNormal operating range: 400-900 \u00b0C.\nAbove {$OBD.CATALYST.HIGH} \u00b0C may indicate overload or fuel system issues.\nRecovery: below {$OBD.CATALYST.HIGH.RECOVERY} \u00b0C.\nPID: obd[{#OBD_KEY}]",
+                                        "description": "Catalyst temperature above {$OBD.CATALYST.HIGH} °C.\nNormal operating range: 400-900 °C.\nAbove {$OBD.CATALYST.HIGH} °C may indicate overload or fuel system issues.\nRecovery: below {$OBD.CATALYST.HIGH.RECOVERY} °C.\nPID: obd[{#OBD_KEY}]",
                                         "tags": [
                                             {
                                                 "tag": "scope",
@@ -202,7 +203,8 @@
                                                 "tag": "type",
                                                 "value": "temperature"
                                             }
-                                        ]
+                                        ],
+                                        "discover": "NO_DISCOVER"
                                     },
                                     {
                                         "uuid": "f4f613d853174a7f8aef616b02928ec3",
@@ -221,7 +223,8 @@
                                                 "tag": "type",
                                                 "value": "rpm"
                                             }
-                                        ]
+                                        ],
+                                        "discover": "NO_DISCOVER"
                                     },
                                     {
                                         "uuid": "ec39523e38f14634ac87c4972daef336",
@@ -230,7 +233,7 @@
                                         "recovery_expression": "last(/Generic Telemetry by OBD2/obd[{#OBD_KEY}])<{$OBD.TEMP.HIGH.RECOVERY}",
                                         "name": "High temperature: {#OBD_NAME} ({ITEM.LASTVALUE})",
                                         "priority": "HIGH",
-                                        "description": "Thermal sensor above {$OBD.TEMP.HIGH}\u00b0C.\nRecovery: below {$OBD.TEMP.HIGH.RECOVERY}\u00b0C.\n\nPID: obd[{#OBD_KEY}]",
+                                        "description": "Thermal sensor above {$OBD.TEMP.HIGH}°C.\nRecovery: below {$OBD.TEMP.HIGH.RECOVERY}°C.\n\nPID: obd[{#OBD_KEY}]",
                                         "tags": [
                                             {
                                                 "tag": "scope",
@@ -240,7 +243,8 @@
                                                 "tag": "type",
                                                 "value": "temperature"
                                             }
-                                        ]
+                                        ],
+                                        "discover": "NO_DISCOVER"
                                     },
                                     {
                                         "uuid": "63a8d61a0bc849d1bba5cc47bcda97ec",
@@ -259,7 +263,8 @@
                                                 "tag": "type",
                                                 "value": "voltage"
                                             }
-                                        ]
+                                        ],
+                                        "discover": "NO_DISCOVER"
                                     },
                                     {
                                         "uuid": "6591e3e7a2df4bf9a4b7222d3d9307bd",
@@ -273,7 +278,8 @@
                                                 "tag": "scope",
                                                 "value": "predictive"
                                             }
-                                        ]
+                                        ],
+                                        "discover": "NO_DISCOVER"
                                     },
                                     {
                                         "uuid": "e1464e59200c44c18b9a27eb615cfdaf",
@@ -287,7 +293,8 @@
                                                 "tag": "scope",
                                                 "value": "predictive"
                                             }
-                                        ]
+                                        ],
+                                        "discover": "NO_DISCOVER"
                                     },
                                     {
                                         "uuid": "d576ed0c6a2f4ee3969ec191d87edf4a",
@@ -301,7 +308,8 @@
                                                 "tag": "scope",
                                                 "value": "predictive"
                                             }
-                                        ]
+                                        ],
+                                        "discover": "NO_DISCOVER"
                                     },
                                     {
                                         "uuid": "dd11937ecb9f4ffbaab3442f7db2bd91",
@@ -315,7 +323,8 @@
                                                 "tag": "scope",
                                                 "value": "predictive"
                                             }
-                                        ]
+                                        ],
+                                        "discover": "NO_DISCOVER"
                                     },
                                     {
                                         "uuid": "077154acb70a490b8140168e62f410ad",
@@ -329,7 +338,8 @@
                                                 "tag": "scope",
                                                 "value": "predictive"
                                             }
-                                        ]
+                                        ],
+                                        "discover": "NO_DISCOVER"
                                     }
                                 ]
                             }
@@ -352,7 +362,7 @@
                         ],
                         "overrides": [
                             {
-                                "name": "Enable temperature trigger for thermal sensors",
+                                "name": "Discover temperature trigger for thermal sensors",
                                 "step": "1",
                                 "filter": {
                                     "evaltype": "AND",
@@ -369,20 +379,20 @@
                                         "operationobject": "TRIGGER_PROTOTYPE",
                                         "operator": "LIKE",
                                         "value": "High temperature",
+                                        "discover": "DISCOVER",
                                         "status": "ENABLED"
                                     }
                                 ]
                             },
                             {
-                                "name": "Disable temperature trigger for non-thermal sensors",
+                                "name": "Discover voltage trigger only for control_module_voltage",
                                 "step": "2",
                                 "filter": {
                                     "evaltype": "AND",
                                     "conditions": [
                                         {
                                             "macro": "{#OBD_KEY}",
-                                            "value": "coolant_temp|intake_temp|ambient_air_temp|oil_temp",
-                                            "operator": "NOT_MATCHES_REGEX",
+                                            "value": "control_module_voltage",
                                             "formulaid": "A"
                                         }
                                     ]
@@ -391,20 +401,21 @@
                                     {
                                         "operationobject": "TRIGGER_PROTOTYPE",
                                         "operator": "LIKE",
-                                        "value": "High temperature",
-                                        "status": "DISABLED"
+                                        "value": "Low voltage",
+                                        "discover": "DISCOVER",
+                                        "status": "ENABLED"
                                     }
                                 ]
                             },
                             {
-                                "name": "Enable voltage trigger only for control_module_voltage",
+                                "name": "Discover RPM trigger only for rpm",
                                 "step": "3",
                                 "filter": {
                                     "evaltype": "AND",
                                     "conditions": [
                                         {
                                             "macro": "{#OBD_KEY}",
-                                            "value": "control_module_voltage",
+                                            "value": "^rpm$",
                                             "formulaid": "A"
                                         }
                                     ]
@@ -413,21 +424,21 @@
                                     {
                                         "operationobject": "TRIGGER_PROTOTYPE",
                                         "operator": "LIKE",
-                                        "value": "Low voltage",
+                                        "value": "High RPM",
+                                        "discover": "DISCOVER",
                                         "status": "ENABLED"
                                     }
                                 ]
                             },
                             {
-                                "name": "Disable voltage trigger for non-voltage sensors",
+                                "name": "Discover monitor trigger only for monitor_*",
                                 "step": "4",
                                 "filter": {
                                     "evaltype": "AND",
                                     "conditions": [
                                         {
                                             "macro": "{#OBD_KEY}",
-                                            "value": "control_module_voltage",
-                                            "operator": "NOT_MATCHES_REGEX",
+                                            "value": "^monitor_",
                                             "formulaid": "A"
                                         }
                                     ]
@@ -436,20 +447,21 @@
                                     {
                                         "operationobject": "TRIGGER_PROTOTYPE",
                                         "operator": "LIKE",
-                                        "value": "Low voltage",
-                                        "status": "DISABLED"
+                                        "value": "Emission monitor failed",
+                                        "discover": "DISCOVER",
+                                        "status": "ENABLED"
                                     }
                                 ]
                             },
                             {
-                                "name": "Enable RPM trigger only for rpm",
+                                "name": "Discover catalyst trigger only for catalyst_temp",
                                 "step": "5",
                                 "filter": {
                                     "evaltype": "AND",
                                     "conditions": [
                                         {
                                             "macro": "{#OBD_KEY}",
-                                            "value": "^rpm$",
+                                            "value": "^catalyst_temp",
                                             "formulaid": "A"
                                         }
                                     ]
@@ -458,127 +470,15 @@
                                     {
                                         "operationobject": "TRIGGER_PROTOTYPE",
                                         "operator": "LIKE",
-                                        "value": "High RPM",
+                                        "value": "Excessive catalyst temperature",
+                                        "discover": "DISCOVER",
                                         "status": "ENABLED"
                                     }
                                 ]
                             },
                             {
-                                "name": "Disable RPM trigger for non-rpm sensors",
+                                "name": "Predictive: Discover Fuel Level",
                                 "step": "6",
-                                "filter": {
-                                    "evaltype": "AND",
-                                    "conditions": [
-                                        {
-                                            "macro": "{#OBD_KEY}",
-                                            "value": "^rpm$",
-                                            "operator": "NOT_MATCHES_REGEX",
-                                            "formulaid": "A"
-                                        }
-                                    ]
-                                },
-                                "operations": [
-                                    {
-                                        "operationobject": "TRIGGER_PROTOTYPE",
-                                        "operator": "LIKE",
-                                        "value": "High RPM",
-                                        "status": "DISABLED"
-                                    }
-                                ]
-                            },
-                            {
-                                "name": "Enable monitor trigger only for monitor_*",
-                                "step": "7",
-                                "filter": {
-                                    "evaltype": "AND",
-                                    "conditions": [
-                                        {
-                                            "macro": "{#OBD_KEY}",
-                                            "value": "^monitor_",
-                                            "formulaid": "A"
-                                        }
-                                    ]
-                                },
-                                "operations": [
-                                    {
-                                        "operationobject": "TRIGGER_PROTOTYPE",
-                                        "operator": "LIKE",
-                                        "value": "Emission monitor failed",
-                                        "status": "ENABLED"
-                                    }
-                                ]
-                            },
-                            {
-                                "name": "Disable monitor trigger for non-monitor_*",
-                                "step": "8",
-                                "filter": {
-                                    "evaltype": "AND",
-                                    "conditions": [
-                                        {
-                                            "macro": "{#OBD_KEY}",
-                                            "value": "^monitor_",
-                                            "operator": "NOT_MATCHES_REGEX",
-                                            "formulaid": "A"
-                                        }
-                                    ]
-                                },
-                                "operations": [
-                                    {
-                                        "operationobject": "TRIGGER_PROTOTYPE",
-                                        "operator": "LIKE",
-                                        "value": "Emission monitor failed",
-                                        "status": "DISABLED"
-                                    }
-                                ]
-                            },
-                            {
-                                "name": "Enable catalyst trigger only for catalyst_temp",
-                                "step": "9",
-                                "filter": {
-                                    "evaltype": "AND",
-                                    "conditions": [
-                                        {
-                                            "macro": "{#OBD_KEY}",
-                                            "value": "^catalyst_temp",
-                                            "formulaid": "A"
-                                        }
-                                    ]
-                                },
-                                "operations": [
-                                    {
-                                        "operationobject": "TRIGGER_PROTOTYPE",
-                                        "operator": "LIKE",
-                                        "value": "Excessive catalyst temperature",
-                                        "status": "ENABLED"
-                                    }
-                                ]
-                            },
-                            {
-                                "name": "Disable catalyst trigger for non-catalyst_temp",
-                                "step": "10",
-                                "filter": {
-                                    "evaltype": "AND",
-                                    "conditions": [
-                                        {
-                                            "macro": "{#OBD_KEY}",
-                                            "value": "^catalyst_temp",
-                                            "operator": "NOT_MATCHES_REGEX",
-                                            "formulaid": "A"
-                                        }
-                                    ]
-                                },
-                                "operations": [
-                                    {
-                                        "operationobject": "TRIGGER_PROTOTYPE",
-                                        "operator": "LIKE",
-                                        "value": "Excessive catalyst temperature",
-                                        "status": "DISABLED"
-                                    }
-                                ]
-                            },
-                            {
-                                "name": "Predictive: Enable Fuel Level",
-                                "step": "11",
                                 "filter": {
                                     "evaltype": "AND",
                                     "conditions": [
@@ -594,13 +494,14 @@
                                         "operationobject": "TRIGGER_PROTOTYPE",
                                         "operator": "LIKE",
                                         "value": "Fuel tank reaching reserve",
+                                        "discover": "DISCOVER",
                                         "status": "ENABLED"
                                     }
                                 ]
                             },
                             {
-                                "name": "Predictive: Enable Coolant Temp Forecast",
-                                "step": "12",
+                                "name": "Predictive: Discover Coolant Temp Forecast",
+                                "step": "7",
                                 "filter": {
                                     "evaltype": "AND",
                                     "conditions": [
@@ -616,13 +517,14 @@
                                         "operationobject": "TRIGGER_PROTOTYPE",
                                         "operator": "LIKE",
                                         "value": "Engine Overheating",
+                                        "discover": "DISCOVER",
                                         "status": "ENABLED"
                                     }
                                 ]
                             },
                             {
-                                "name": "Predictive: Enable Battery Drain",
-                                "step": "13",
+                                "name": "Predictive: Discover Battery Drain",
+                                "step": "8",
                                 "filter": {
                                     "evaltype": "AND",
                                     "conditions": [
@@ -638,13 +540,14 @@
                                         "operationobject": "TRIGGER_PROTOTYPE",
                                         "operator": "LIKE",
                                         "value": "Battery drain",
+                                        "discover": "DISCOVER",
                                         "status": "ENABLED"
                                     }
                                 ]
                             },
                             {
-                                "name": "Predictive: Enable LTFT Warning",
-                                "step": "14",
+                                "name": "Predictive: Discover LTFT Warning",
+                                "step": "9",
                                 "filter": {
                                     "evaltype": "AND",
                                     "conditions": [
@@ -660,13 +563,14 @@
                                         "operationobject": "TRIGGER_PROTOTYPE",
                                         "operator": "LIKE",
                                         "value": "Long Term Fuel Trim",
+                                        "discover": "DISCOVER",
                                         "status": "ENABLED"
                                     }
                                 ]
                             },
                             {
-                                "name": "Predictive: Enable Maintenance",
-                                "step": "15",
+                                "name": "Predictive: Discover Maintenance",
+                                "step": "10",
                                 "filter": {
                                     "evaltype": "AND",
                                     "conditions": [
@@ -682,6 +586,7 @@
                                         "operationobject": "TRIGGER_PROTOTYPE",
                                         "operator": "LIKE",
                                         "value": "maintenance milestone",
+                                        "discover": "DISCOVER",
                                         "status": "ENABLED"
                                     }
                                 ]
@@ -729,12 +634,12 @@
                     {
                         "macro": "{$OBD.CATALYST.HIGH}",
                         "value": "950",
-                        "description": "Excessive temperature threshold for catalyst (\u00b0C)"
+                        "description": "Excessive temperature threshold for catalyst (°C)"
                     },
                     {
                         "macro": "{$OBD.CATALYST.HIGH.RECOVERY}",
                         "value": "900",
-                        "description": "Recovery temperature for catalyst (\u00b0C)"
+                        "description": "Recovery temperature for catalyst (°C)"
                     },
                     {
                         "macro": "{$OBD.ENGINE.DISPLACEMENT}",
@@ -759,12 +664,12 @@
                     {
                         "macro": "{$OBD.TEMP.HIGH}",
                         "value": "110",
-                        "description": "High temperature threshold for thermal sensors (\u00b0C)"
+                        "description": "High temperature threshold for thermal sensors (°C)"
                     },
                     {
                         "macro": "{$OBD.TEMP.HIGH.RECOVERY}",
                         "value": "100",
-                        "description": "Recovery temperature for thermal sensors (\u00b0C)"
+                        "description": "Recovery temperature for thermal sensors (°C)"
                     },
                     {
                         "macro": "{$OBD.VOLTAGE.LOW}",
