@@ -29,6 +29,7 @@ const unsigned long MONITOR_INTERVAL   = 10000;   // 10 seconds in ms
 uint32_t obd2FailedReads    = 0; // PID reads that returned no valid data
 uint32_t obd2ReconnectCount = 0; // Total BT + Wi-Fi reconnection attempts since boot
 uint32_t zabbixSendErrors   = 0; // Failed TCP connections to Zabbix server
+int      activeZabbixNode   = 0; // Index of current active Zabbix HA server node
 
 struct PIDDef {
   byte pid;
@@ -86,6 +87,7 @@ void initOBD2();
 String sendCommand(String cmd);
 void discoverPIDs();
 void sendZabbixLLD();
+bool connectToZabbix();
 void sendZabbixBatch(String payloadJson, const char* host);
 void collectAndSendMonitorMetrics();
 float queryAndParsePID(byte pid);
@@ -137,7 +139,9 @@ void setup() {
 
   SerialBT.begin("ESP32_OBD2", true);
   SerialBT.setPin(ELM327_PIN);
-  Serial.println("Starting Bluetooth... Connecting to ELM327 (MAC 01:23:45:67:89:BA)...");
+  Serial.printf("Starting Bluetooth... Connecting to ELM327 (MAC %02X:%02X:%02X:%02X:%02X:%02X)...\n",
+                ELM327_MAC_BYTES[0], ELM327_MAC_BYTES[1], ELM327_MAC_BYTES[2],
+                ELM327_MAC_BYTES[3], ELM327_MAC_BYTES[4], ELM327_MAC_BYTES[5]);
   
   bool connected = SerialBT.connect(ELM327_MAC_BYTES);
   if(connected) {
@@ -458,10 +462,31 @@ void collectAndSendMonitorMetrics() {
   sendZabbixBatch(payload, ZABBIX_MONITOR_HOST);
 }
 
+// ------------------------------------------
+// FUNCTION: connectToZabbix
+// Connects to Zabbix Server with automatic
+// High Availability (HA) failover support.
+// ------------------------------------------
+bool connectToZabbix() {
+  for (int attempt = 0; attempt < NUM_ZABBIX_SERVERS; attempt++) {
+    int nodeIdx = (activeZabbixNode + attempt) % NUM_ZABBIX_SERVERS;
+    Serial.printf("Connecting to Zabbix node %s:%d...\n", ZABBIX_SERVERS[nodeIdx], ZABBIX_PORT);
+    if (client.connect(ZABBIX_SERVERS[nodeIdx], ZABBIX_PORT)) {
+      if (nodeIdx != activeZabbixNode) {
+        Serial.printf("[HA FAILOVER] Switched active Zabbix node to %s\n", ZABBIX_SERVERS[nodeIdx]);
+        activeZabbixNode = nodeIdx;
+      }
+      return true;
+    }
+    Serial.printf("[WARN] Node %s unreachable (standby or down), trying next...\n", ZABBIX_SERVERS[nodeIdx]);
+  }
+  Serial.println("[ERROR] All Zabbix server nodes unreachable.");
+  zabbixSendErrors++;
+  return false;
+}
+
 void sendZabbixBatch(String payloadJson, const char* host) {
-  if (!client.connect(ZABBIX_SERVER, ZABBIX_PORT)) {
-    Serial.println("[ERROR] TCP connection to Zabbix failed.");
-    zabbixSendErrors++;
+  if (!connectToZabbix()) {
     return;
   }
 

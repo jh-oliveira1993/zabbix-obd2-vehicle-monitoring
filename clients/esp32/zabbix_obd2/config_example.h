@@ -11,8 +11,13 @@
 const char *WIFI_SSID = "YOUR_WIFI_SSID";
 const char *WIFI_PASS = "YOUR_WIFI_PASSWORD";
 
-// Zabbix Server Configuration
-const char *ZABBIX_SERVER = "0.0.0.0"; // Zabbix IP or DNS
+// Zabbix Server Configuration (HA cluster nodes or single server)
+const char *ZABBIX_SERVERS[] = {
+  "192.168.1.100", // Primary Zabbix Server
+  "192.168.1.101"  // Standby Zabbix Server (optional)
+};
+const int NUM_ZABBIX_SERVERS = sizeof(ZABBIX_SERVERS) / sizeof(ZABBIX_SERVERS[0]);
+const char *ZABBIX_SERVER = ZABBIX_SERVERS[0]; // Fallback compatibility
 const int ZABBIX_PORT = 10051; // Zabbix port
 const char *ZABBIX_HOST = "YOUR_VEHICLE_NAME"; // Host for OBD2 vehicle metrics
 
