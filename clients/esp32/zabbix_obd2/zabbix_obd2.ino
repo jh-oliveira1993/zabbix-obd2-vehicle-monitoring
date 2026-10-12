@@ -136,6 +136,12 @@ void setup() {
     Serial.print(".");
   }
   Serial.println("\n[OK] Wi-Fi Connected! IP: " + WiFi.localIP().toString());
+  Serial.printf("[NET] IP: %s | Gateway: %s | Subnet: %s | DNS: %s\n",
+    WiFi.localIP().toString().c_str(),
+    WiFi.gatewayIP().toString().c_str(),
+    WiFi.subnetMask().toString().c_str(),
+    WiFi.dnsIP().toString().c_str());
+
 
   SerialBT.begin("ESP32_OBD2", true);
   SerialBT.setPin(ELM327_PIN);
