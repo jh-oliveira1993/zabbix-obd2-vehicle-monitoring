@@ -470,14 +470,29 @@ void collectAndSendMonitorMetrics() {
 bool connectToZabbix() {
   for (int attempt = 0; attempt < NUM_ZABBIX_SERVERS; attempt++) {
     int nodeIdx = (activeZabbixNode + attempt) % NUM_ZABBIX_SERVERS;
+    client.stop();
+    IPAddress targetIp;
+    bool isIp = targetIp.fromString(ZABBIX_SERVERS[nodeIdx]);
     Serial.printf("Connecting to Zabbix node %s:%d...\n", ZABBIX_SERVERS[nodeIdx], ZABBIX_PORT);
-    if (client.connect(ZABBIX_SERVERS[nodeIdx], ZABBIX_PORT)) {
+    
+    unsigned long startConn = millis();
+    bool connected = false;
+    if (isIp) {
+      connected = client.connect(targetIp, ZABBIX_PORT, 6000);
+    } else {
+      connected = client.connect(ZABBIX_SERVERS[nodeIdx], ZABBIX_PORT, 6000);
+    }
+    unsigned long duration = millis() - startConn;
+    Serial.printf("  -> Result: %s (took %lu ms)\n", connected ? "SUCCESS" : "FAILED", duration);
+
+    if (connected) {
       if (nodeIdx != activeZabbixNode) {
         Serial.printf("[HA FAILOVER] Switched active Zabbix node to %s\n", ZABBIX_SERVERS[nodeIdx]);
         activeZabbixNode = nodeIdx;
       }
       return true;
     }
+    client.stop();
     Serial.printf("[WARN] Node %s unreachable (standby or down), trying next...\n", ZABBIX_SERVERS[nodeIdx]);
   }
   Serial.println("[ERROR] All Zabbix server nodes unreachable.");
