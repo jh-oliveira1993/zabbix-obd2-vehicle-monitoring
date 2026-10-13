@@ -1,5 +1,6 @@
 #include <WiFi.h>
 #include <BluetoothSerial.h>
+#include "offline_buffer.h"
 
 // ==========================================
 // GENERAL SETTINGS (USER CONFIGURABLE)
@@ -81,6 +82,7 @@ const int NUM_KNOWN_PIDS = sizeof(KNOWN_PIDS)/sizeof(PIDDef);
 PIDDef activePIDs[40];
 int numActivePIDs = 0;
 bool isDiscoveryDone = false;
+bool isLldSent = false;
 
 // Function prototypes
 void initOBD2();
@@ -88,9 +90,10 @@ String sendCommand(String cmd);
 void discoverPIDs();
 void sendZabbixLLD();
 bool connectToZabbix();
-void sendZabbixBatch(String payloadJson, const char* host);
+bool sendZabbixBatch(const String& payloadJson, const char* host);
 void collectAndSendMonitorMetrics();
 float queryAndParsePID(byte pid);
+const char* getPidSuffix(uint8_t pid);
 
 // FreeRTOS Task for Asynchronous LED Blinking (Runs on Core 0)
 void ledTaskCode(void * parameter) {
@@ -127,30 +130,40 @@ void setup() {
   xTaskCreatePinnedToCore(ledTaskCode, "LEDTask", 10000, NULL, 1, NULL, 0);
 
   Serial.println("\n--- Starting Dynamic Zabbix OBD2 Telemetry on ESP32 ---");
-  
+
+  // Mount LittleFS and initialize offline buffer
+  offlineBuffer.begin();
+
   appState = 0;
+  WiFi.mode(WIFI_STA);
+  WiFi.setAutoReconnect(true);
   WiFi.begin(WIFI_SSID, WIFI_PASS);
   Serial.print("Connecting to Wi-Fi");
-  while (WiFi.status() != WL_CONNECTED) {
+  int wifiAttempts = 0;
+  while (WiFi.status() != WL_CONNECTED && wifiAttempts < 20) {
     delay(500);
     Serial.print(".");
+    wifiAttempts++;
   }
-  Serial.println("\n[OK] Wi-Fi Connected! IP: " + WiFi.localIP().toString());
-  Serial.printf("[NET] IP: %s | Gateway: %s | Subnet: %s | DNS: %s\n",
-    WiFi.localIP().toString().c_str(),
-    WiFi.gatewayIP().toString().c_str(),
-    WiFi.subnetMask().toString().c_str(),
-    WiFi.dnsIP().toString().c_str());
-
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("\n[OK] Wi-Fi Connected! IP: " + WiFi.localIP().toString());
+    Serial.printf("[NET] IP: %s | Gateway: %s | Subnet: %s | DNS: %s\n",
+                  WiFi.localIP().toString().c_str(),
+                  WiFi.gatewayIP().toString().c_str(),
+                  WiFi.subnetMask().toString().c_str(),
+                  WiFi.dnsIP().toString().c_str());
+  } else {
+    Serial.println("\n[WARN] Wi-Fi connection timed out. Starting offline mode.");
+  }
 
   SerialBT.begin("ESP32_OBD2", true);
   SerialBT.setPin(ELM327_PIN);
   Serial.printf("Starting Bluetooth... Connecting to ELM327 (MAC %02X:%02X:%02X:%02X:%02X:%02X)...\n",
                 ELM327_MAC_BYTES[0], ELM327_MAC_BYTES[1], ELM327_MAC_BYTES[2],
                 ELM327_MAC_BYTES[3], ELM327_MAC_BYTES[4], ELM327_MAC_BYTES[5]);
-  
+
   bool connected = SerialBT.connect(ELM327_MAC_BYTES);
-  if(connected) {
+  if (connected) {
     Serial.println("[OK] Connected to ELM327 successfully!");
     appState = 2;
     initOBD2();
@@ -163,6 +176,16 @@ void setup() {
 void loop() {
   unsigned long now = millis();
 
+  // ── Wi-Fi background reconnection ───────────────────────────────────────
+  static unsigned long lastWifiRetry = 0;
+  if (WiFi.status() != WL_CONNECTED) {
+    if (now - lastWifiRetry >= 10000) {
+      lastWifiRetry = now;
+      Serial.println("[NET] Wi-Fi disconnected, reconnecting in background...");
+      WiFi.reconnect();
+    }
+  }
+
   // ── Self-monitoring: runs whenever Wi-Fi is available ────────────────────
   // Independent of the Bluetooth connection to the ELM327. Allows monitoring
   // the ESP32 health even when the vehicle is off or the adapter is absent.
@@ -171,78 +194,114 @@ void loop() {
     lastMonitorTime = now;
   }
 
-  // ── OBD2: requires both Wi-Fi and Bluetooth (ELM327) to be active ────────
-  if (SerialBT.connected() && WiFi.status() == WL_CONNECTED) {
+  // ── Backlog Draining: send queued offline samples to Zabbix ─────────────
+  if (WiFi.status() == WL_CONNECTED && offlineBuffer.hasBacklog()) {
+    int drainLimit = SerialBT.connected() ? 2 : 5;
+    for (int d = 0; d < drainLimit && offlineBuffer.hasBacklog(); d++) {
+      bool ok = offlineBuffer.drainSingleBatch(sendZabbixBatch, ZABBIX_HOST, getPidSuffix);
+      if (!ok) break; // Network error or NTP time not synced yet
+      delay(50);
+    }
+  }
+
+  // ── LLD Discovery deferred transmission if was offline ──────────────────
+  if (WiFi.status() == WL_CONNECTED && isDiscoveryDone && !isLldSent) {
+    sendZabbixLLD();
+    isLldSent = true;
+  }
+
+  // ── OBD2 Telemetry collection ───────────────────────────────────────────
+  if (SerialBT.connected()) {
     appState = 2;
 
     // Perform discovery if not done, or if 1 hour has passed
     if (!isDiscoveryDone || (now - lastDiscoveryTime >= DISCOVERY_INTERVAL)) {
       discoverPIDs();
-      sendZabbixLLD();
       lastDiscoveryTime = now;
       isDiscoveryDone = true;
+      if (WiFi.status() == WL_CONNECTED) {
+        sendZabbixLLD();
+        isLldSent = true;
+      } else {
+        isLldSent = false;
+      }
     }
-    
-    // Polling Phase: OBD2 metrics -> ZABBIX_HOST
+
+    // Polling Phase: OBD2 metrics
     if (numActivePIDs > 0) {
-      String batchPayload = "{\"request\":\"sender data\",\"data\":[";
-      batchPayload.reserve(4096);
-      bool firstItem = true;
-      int successfulReads = 0;
-      
+      struct SamplePair {
+        uint8_t pid;
+        float value;
+      };
+      SamplePair currentSamples[40];
+      int sampleCount = 0;
+
       for (int i = 0; i < numActivePIDs; i++) {
         float value = queryAndParsePID(activePIDs[i].pid);
         if (value != -999.0) {
-          if (!firstItem) batchPayload += ",";
-          batchPayload += "{\"host\":\"" + String(ZABBIX_HOST) + "\",";
-          batchPayload += "\"key\":\"obd[" + activePIDs[i].suffix + "]\",";
-          batchPayload += "\"value\":\"" + String(value, 2) + "\"}";
-          firstItem = false;
-          successfulReads++;
+          currentSamples[sampleCount].pid = activePIDs[i].pid;
+          currentSamples[sampleCount].value = value;
+          sampleCount++;
           Serial.printf("%-20s = %.2f %s\n", activePIDs[i].name.c_str(), value, activePIDs[i].unit.c_str());
         } else {
           obd2FailedReads++; // Count invalid / no-response PID reads
         }
       }
-      batchPayload += "]}";
-      
-      if (successfulReads > 0) {
-        appState = 3; // Transmitting
-        sendZabbixBatch(batchPayload, ZABBIX_HOST);
+
+      if (sampleCount > 0) {
+        // If Wi-Fi is connected AND buffer has no backlog, send directly to Zabbix
+        if (WiFi.status() == WL_CONNECTED && !offlineBuffer.hasBacklog()) {
+          String batchPayload = "{\"request\":\"sender data\",\"data\":[";
+          batchPayload.reserve(4096);
+          bool firstItem = true;
+          time_t nowEpoch = time(nullptr);
+          bool hasTime = (nowEpoch > 1700000000);
+
+          for (int i = 0; i < sampleCount; i++) {
+            const char* suffix = getPidSuffix(currentSamples[i].pid);
+            if (!suffix) continue;
+            if (!firstItem) batchPayload += ",";
+            batchPayload += "{\"host\":\"" + String(ZABBIX_HOST) + "\",";
+            batchPayload += "\"key\":\"obd[" + String(suffix) + "]\",";
+            batchPayload += "\"value\":\"" + String(currentSamples[i].value, 2) + "\"";
+            if (hasTime) {
+              batchPayload += ",\"clock\":" + String((uint32_t)nowEpoch);
+            }
+            batchPayload += "}";
+            firstItem = false;
+          }
+          batchPayload += "]}";
+
+          appState = 3; // Transmitting
+          bool ok = sendZabbixBatch(batchPayload, ZABBIX_HOST);
+          if (!ok) {
+            Serial.println("[BUFFER] Live send failed, saving samples to offline buffer.");
+            for (int i = 0; i < sampleCount; i++) {
+              offlineBuffer.pushSample(currentSamples[i].pid, currentSamples[i].value);
+            }
+          }
+        } else {
+          // Offline, or backlog is currently being drained: buffer live samples to preserve FIFO order
+          for (int i = 0; i < sampleCount; i++) {
+            offlineBuffer.pushSample(currentSamples[i].pid, currentSamples[i].value);
+          }
+        }
       }
     }
 
     Serial.println("----------------------------------------");
     delay(1000); // Wait 1 second before next polling cycle (matches 1Hz python script)
-    
+
   } else {
-    Serial.println("[WARNING] Connection lost. Attempting to reconnect...");
-    
-    if (WiFi.status() != WL_CONNECTED) {
-      appState = 0;
-      obd2ReconnectCount++;
-      Serial.print("-> Reconnecting Wi-Fi...");
-      WiFi.disconnect();
-      WiFi.begin(WIFI_SSID, WIFI_PASS);
-      int retries = 0;
-      while (WiFi.status() != WL_CONNECTED && retries < 15) {
-        delay(500); Serial.print("."); retries++;
-      }
-      if(WiFi.status() == WL_CONNECTED) {
-        Serial.println("\n[OK] Wi-Fi Reconnected!");
-      }
-    }
-    
-    if (WiFi.status() == WL_CONNECTED && !SerialBT.connected()) {
-      appState = 1;
-      obd2ReconnectCount++;
-      Serial.println("-> Reconnecting Bluetooth to ELM327...");
-      bool connected = SerialBT.connect(ELM327_MAC_BYTES);
-      if(connected) {
-        Serial.println("[OK] Bluetooth reconnected successfully!");
-        appState = 2;
-        initOBD2();
-      }
+    // Bluetooth not connected
+    appState = 1;
+    Serial.println("[BT] Bluetooth disconnected. Attempting to reconnect to ELM327...");
+    obd2ReconnectCount++;
+    bool connected = SerialBT.connect(ELM327_MAC_BYTES);
+    if (connected) {
+      Serial.println("[OK] Bluetooth reconnected successfully!");
+      appState = 2;
+      initOBD2();
     }
     delay(2000);
   }
@@ -411,6 +470,10 @@ void collectAndSendMonitorMetrics() {
   // --- Application metrics ---
   uint8_t  btConnected = SerialBT.connected() ? 1 : 0;
 
+  // --- Buffer metrics ---
+  uint32_t bufQueuedSamples = offlineBuffer.getQueuedSamplesCount();
+  uint32_t bufUsedBytes     = offlineBuffer.getUsedBytes();
+
   Serial.printf("  Heap Free:      %u bytes (%.1f%% used)\n", heapFree, heapUsedPct);
   Serial.printf("  Heap Min Free:  %u bytes\n", heapMinFree);
   Serial.printf("  Wi-Fi RSSI:     %d dBm  (Ch %d)\n", rssi, channel);
@@ -423,6 +486,8 @@ void collectAndSendMonitorMetrics() {
   Serial.printf("  BT Connected:   %u | Active PIDs: %d\n", btConnected, numActivePIDs);
   Serial.printf("  Failed Reads:   %u | Reconnects: %u | Zabbix Errors: %u\n",
                 obd2FailedReads, obd2ReconnectCount, zabbixSendErrors);
+  Serial.printf("  Buffer Queued:  %u samples (%u bytes used on Flash)\n",
+                bufQueuedSamples, bufUsedBytes);
 
   String h = String(ZABBIX_MONITOR_HOST);
   String payload;
@@ -461,11 +526,24 @@ void collectAndSendMonitorMetrics() {
   payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.obd2.active_pids\",\"value\":\"" + String(numActivePIDs)   + "\"},";
   payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.obd2.failed_reads\",\"value\":\"" + String(obd2FailedReads) + "\"},";
   payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.obd2.reconnects\",\"value\":\""  + String(obd2ReconnectCount) + "\"},";
-  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.zabbix.send_errors\",\"value\":\"" + String(zabbixSendErrors) + "\"}";
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.zabbix.send_errors\",\"value\":\"" + String(zabbixSendErrors) + "\"},";
+
+  // Buffer metrics
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.buffer.samples\",\"value\":\""   + String(bufQueuedSamples)   + "\"},";
+  payload += "{\"host\":\"" + h + "\",\"key\":\"esp32.buffer.bytes\",\"value\":\""     + String(bufUsedBytes)       + "\"}";
 
   payload += "]}";
 
   sendZabbixBatch(payload, ZABBIX_MONITOR_HOST);
+}
+
+const char* getPidSuffix(uint8_t pid) {
+  for (int i = 0; i < NUM_KNOWN_PIDS; i++) {
+    if (KNOWN_PIDS[i].pid == pid) {
+      return KNOWN_PIDS[i].suffix.c_str();
+    }
+  }
+  return nullptr;
 }
 
 // ------------------------------------------
@@ -506,9 +584,9 @@ bool connectToZabbix() {
   return false;
 }
 
-void sendZabbixBatch(String payloadJson, const char* host) {
+bool sendZabbixBatch(const String& payloadJson, const char* host) {
   if (!connectToZabbix()) {
-    return;
+    return false;
   }
 
   int jsonLen = payloadJson.length();
@@ -535,7 +613,9 @@ void sendZabbixBatch(String payloadJson, const char* host) {
   while(bytesSent < totalBytes) {
     if (!client.connected()) {
       Serial.println("[ERROR] Connection dropped mid-send!");
-      break;
+      client.stop();
+      zabbixSendErrors++;
+      return false;
     }
     int chunk = totalBytes - bytesSent;
     if (chunk > 256) chunk = 256;
@@ -552,9 +632,13 @@ void sendZabbixBatch(String payloadJson, const char* host) {
   Serial.print("-> Zabbix: ");
   long timeout = millis() + 3000;
   bool responsePrinted = false;
+  String respStr = "";
+  respStr.reserve(256);
   while(millis() < timeout) {
     if(client.available()) {
-      Serial.write(client.read());
+      char c = (char)client.read();
+      Serial.write(c);
+      respStr += c;
       responsePrinted = true;
     } else if (!client.connected() && responsePrinted) {
       break; // connection closed and we read the data
@@ -565,6 +649,12 @@ void sendZabbixBatch(String payloadJson, const char* host) {
   }
   Serial.println("");
   client.stop();
+
+  bool success = (respStr.indexOf("\"response\":\"success\"") != -1);
+  if (!success) {
+    zabbixSendErrors++;
+  }
+  return success;
 }
 
 float queryAndParsePID(byte pid) {

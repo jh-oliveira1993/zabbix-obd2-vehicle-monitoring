@@ -12,7 +12,7 @@
                 "uuid": "6b2015ff917b4e1bb3c5b823c2efe945",
                 "template": "ESP32 Self-Monitoring",
                 "name": "ESP32 Self-Monitoring",
-                "description": "Monitors internal health metrics of an ESP32 microcontroller running the zabbix-obd2 firmware.\n\nMetrics are sent via Zabbix Trapper every 10 seconds by the firmware itself.\n\nKeys collected:\n  esp32.heap.free       - Free heap memory (bytes)\n  esp32.heap.total      - Total heap size (bytes)\n  esp32.heap.min_free   - Minimum free heap since boot (bytes)\n  esp32.heap.max_alloc  - Largest contiguous allocatable block (bytes)\n  esp32.heap.used_pct   - Heap used percentage (%)\n  esp32.wifi.rssi       - Wi-Fi signal strength (dBm)\n  esp32.wifi.channel    - Wi-Fi channel\n  esp32.uptime          - Device uptime (seconds)\n  esp32.cpu.freq        - CPU frequency (MHz)\n  esp32.tasks           - Number of active FreeRTOS tasks\n  esp32.chip.temp       - Internal chip temperature (°C)\n  esp32.reset_reason    - Last reset reason code (esp_reset_reason_t)",
+                "description": "Monitors internal health metrics of an ESP32 microcontroller running the zabbix-obd2 firmware.\n\nMetrics are sent via Zabbix Trapper every 10 seconds by the firmware itself.\n\nKeys collected:\n  esp32.heap.free       - Free heap memory (bytes)\n  esp32.heap.total      - Total heap size (bytes)\n  esp32.heap.min_free   - Minimum free heap since boot (bytes)\n  esp32.heap.max_alloc  - Largest contiguous allocatable block (bytes)\n  esp32.heap.used_pct   - Heap used percentage (%)\n  esp32.wifi.rssi       - Wi-Fi signal strength (dBm)\n  esp32.wifi.channel    - Wi-Fi channel\n  esp32.uptime          - Device uptime (seconds)\n  esp32.cpu.freq        - CPU frequency (MHz)\n  esp32.tasks           - Number of active FreeRTOS tasks\n  esp32.chip.temp       - Internal chip temperature (°C)\n  esp32.reset_reason    - Last reset reason code (esp_reset_reason_t)\n  esp32.buffer.samples  - Queued samples in flash offline buffer\n  esp32.buffer.bytes    - Bytes used by offline buffer in LittleFS",
                 "groups": [
                     {
                         "name": "Templates/IoT"
@@ -613,6 +613,45 @@
                                         "value": "availability"
                                     }
                                 ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "9c66de0183144df3bfb7d15ae485a0c1",
+                        "name": "Offline Buffer Queued Samples",
+                        "type": "TRAP",
+                        "key": "esp32.buffer.samples",
+                        "delay": "0",
+                        "value_type": "UNSIGNED",
+                        "description": "Number of OBD2 metric samples currently queued in the ESP32 LittleFS flash offline buffer waiting to be drained to Zabbix.",
+                        "tags": [
+                            {
+                                "tag": "component",
+                                "value": "storage"
+                            },
+                            {
+                                "tag": "device",
+                                "value": "esp32"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "5fa7e937d12f4c9c824f923b7e411b02",
+                        "name": "Offline Buffer Used Bytes",
+                        "type": "TRAP",
+                        "key": "esp32.buffer.bytes",
+                        "delay": "0",
+                        "value_type": "UNSIGNED",
+                        "units": "B",
+                        "description": "Total bytes consumed by the LittleFS filesystem for buffered offline telemetry segments on flash.",
+                        "tags": [
+                            {
+                                "tag": "component",
+                                "value": "storage"
+                            },
+                            {
+                                "tag": "device",
+                                "value": "esp32"
                             }
                         ]
                     }
