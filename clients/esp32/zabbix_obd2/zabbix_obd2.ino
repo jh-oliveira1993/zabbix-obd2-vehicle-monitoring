@@ -638,7 +638,9 @@ bool sendZabbixBatch(const String& payloadJson, const char* host) {
     if(client.available()) {
       char c = (char)client.read();
       Serial.write(c);
-      respStr += c;
+      if (c != '\0') {
+        respStr += c;
+      }
       responsePrinted = true;
     } else if (!client.connected() && responsePrinted) {
       break; // connection closed and we read the data
